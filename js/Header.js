@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
   StyleSheet,
+  Image,
   Text,
   TouchableHighlight,
   View
@@ -12,19 +13,18 @@ class Header extends React.Component{
     onPress: Function,
     style: ?any,
   }){
-    super();
+    super(props);
   }
 
   render(): ?ReactElement {
     return(
       <View style ={[styles.header, this.props.style]}>
-        <TouchableHighlight
+        <TouchableHighlight underlayColor='transparent'
           onPress={this.props.onPress}
           style={[styles.button]}>
-          <Text
-            style={[styles.menu]}>
-          Menu
-          </Text>
+          <Image
+            source={require('./Images/hamburger.png')}
+            style={[styles.menu]}/>
         </TouchableHighlight>
         <View style={[styles.titleContainer]}>
           <Text style={[styles.title]}>{this.props.title}</Text>
@@ -37,28 +37,26 @@ class Header extends React.Component{
 var styles = StyleSheet.create({
   header:{
     flexDirection: 'row',
+    backgroundColor: '#424242',
+    padding: 10,
   },
   button:{
-    backgroundColor: 'blue',
-    height: 36,
     padding: 8,
   },
   menu:{
-    color: 'white',
     flex: 1,
-    fontSize: 15,
-    fontWeight: '500',
-    textAlign: 'center',
-    textAlignVertical: 'center',
   },
   titleContainer:{
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
     flex: 1,
     padding: 6,
+    marginLeft: 10,
   },
   title:{
     fontSize: 17,
     fontWeight: '500',
+    color: 'white'
   }
 });
 

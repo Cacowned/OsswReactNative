@@ -8,50 +8,100 @@ import {
   View
 }
 from 'react-native';
+
+import WatchesView from './Views/Watches'
+
 import Header from './Header'
 import Menu from './Menu'
+import MenuItemType from './MenuItems'
 
 const Dimensions = require('Dimensions');
 const SplitViewWindows = require('SplitViewWindows');
-const DRAWER_WIDTH_LEFT = 56;
+const DRAWER_WIDTH_LEFT = 280;
 
 class Main extends React.Component {
-  _renderPaneContent: Function;
 
   constructor(props: Props) {
     super(props);
-    // this._handleAction = this._handleAction.bind(this);
-    this._renderPaneContent = this._renderPaneContent.bind(this);
+    this.state = {
+      activeTab: 'watchfaces'
+    }
   }
 
   render(): ? ReactElement<any> {
       return (
         <SplitViewWindows
           panePosition={SplitViewWindows.positions.Left}
-          paneWidth = {Dimensions.get('window').width - DRAWER_WIDTH_LEFT}
+          paneWidth = {DRAWER_WIDTH_LEFT}
           ref = {(splitView) => {this.splitView = splitView;}}
-          renderPaneView = {this._renderPaneContent} >
+          renderPaneView = {this._renderPaneContent.bind(this)} >
           <View style={styles.container}>
             <Header
               onPress={() => this.splitView.openPane()}
-              title = 'Title'
+              title = {this.getTitle()}
               style = {styles.header}
             />
-            <Text style = {styles.instructions}>
-              To get started, edit index.windows.js
-            </Text>
-            <Text style = {styles.instructions} >
-              Press Ctrl + R to reload,{'\n'}
-              Shift + F10 or shake
-              for dev menu
-            </Text>
-          </View >
+            <View styles={styles.content}>
+              {this.renderContent()}
+            </View>
+          </View>
         </SplitViewWindows>
       )
     }
 
+    getTitle(){
+      switch(this.state.activeTab){
+        case 'watchfaces':
+          return "Watch Faces";
+        case 'apps':
+          return "Applications";
+        case 'utils':
+          return "Utilities";
+        case 'exts':
+          return "Extensions";
+        case 'watches':
+          return "Watches";
+        case 'settings':
+          return "Settings";
+      }
+      return (
+        <Text>Unknown</Text>
+      );
+    }
+
+    renderContent(){
+      switch(this.state.activeTab){
+        case 'watchfaces':
+          return (<Text>Watch Faces</Text>);
+        case 'apps':
+          return (<Text>Applications</Text>);
+        case 'utils':
+          return (<Text>Utilities</Text>);
+        case 'exts':
+          return (<Text>Extensions</Text>);
+        case 'watches':
+          return <WatchesView/>;
+        case 'settings':
+          return (<Text>Settings</Text>);
+      }
+      return (
+        <Text>Unknown</Text>
+      );
+    }
+
   _renderPaneContent() {
-    return ( <Menu style = {styles.paneContentWrapper}/>);
+    console.log(this);
+    return (
+      <Menu
+        style = {styles.paneContentWrapper}
+        onNavigateRequested={this._navigateRequested.bind(this)}
+        menuItem={this.state.activeTab}/>
+    );
+  }
+
+  _navigateRequested(nav: MenuItemType){
+    this.splitView.closePane();
+    this.setState({activeTab: nav});
   }
 }
 
