@@ -1,19 +1,15 @@
-import React, {
-  Component
-}
-from 'react';
-import {
-  StyleSheet,
-  Text,
-  View
-}
-from 'react-native';
+/* @flow */
 
-import WatchesView from './Views/Watches'
+'use strict';
+var React = require('React');
+var StyleSheet = require('StyleSheet');
+var Text = require('Text');
+var View = require('View');
+var WatchesView = require('./Views/Watches');
+var Header = require('./Header');
+var Menu = require('./Menu');
 
-import Header from './Header'
-import Menu from './Menu'
-import MenuItemType from './MenuItems'
+var { connect } = require('react-redux');
 
 const Dimensions = require('Dimensions');
 const SplitViewWindows = require('SplitViewWindows');
@@ -23,9 +19,6 @@ class Main extends React.Component {
 
   constructor(props: Props) {
     super(props);
-    this.state = {
-      activeTab: 'watchfaces'
-    }
   }
 
   render(): ? ReactElement<any> {
@@ -50,7 +43,7 @@ class Main extends React.Component {
     }
 
     getTitle(){
-      switch(this.state.activeTab){
+      switch(this.props.activeTab){
         case 'watchfaces':
           return "Watch Faces";
         case 'apps':
@@ -69,8 +62,12 @@ class Main extends React.Component {
       );
     }
 
+    _closePane() {
+      this.splitView.closePane();
+    }
+
     renderContent(){
-      switch(this.state.activeTab){
+      switch(this.props.activeTab){
         case 'watchfaces':
           return (<Text>Watch Faces</Text>);
         case 'apps':
@@ -94,14 +91,8 @@ class Main extends React.Component {
     return (
       <Menu
         style = {styles.paneContentWrapper}
-        onNavigateRequested={this._navigateRequested.bind(this)}
-        menuItem={this.state.activeTab}/>
+        closePane={this._closePane.bind(this)}/>
     );
-  }
-
-  _navigateRequested(nav: MenuItemType){
-    this.splitView.closePane();
-    this.setState({activeTab: nav});
   }
 }
 
@@ -125,4 +116,10 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = Main;
+function select(store){
+  return {
+    activeTab: store.navigation.tab,
+  };
+}
+
+module.exports = connect(select)(Main);

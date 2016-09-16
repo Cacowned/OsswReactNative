@@ -18,12 +18,47 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE
+ *
  * @flow
  */
 
 'use strict';
 
-const {AppRegistry}=require('react-native');
-const setup = require('./js/setup');
+var React = require('React');
+var Main = require('./Main');
 
-AppRegistry.registerComponent('osswReactNative', setup);
+var { Provider } = require('react-redux');
+var configureStore = require('./store/configureStore');
+
+function setup(): ReactClass<{}>{
+
+  class Root extends React.Component {
+    state: {
+      isLoading: boolean;
+      store: any;
+    };
+
+    constructor() {
+      super();
+      this.state = {
+        isLoading: true,
+        store: configureStore(() => this.setState({isLoading: false})),
+      };
+    }
+
+    render() {
+      // if(this.state.isLoading){
+      //   return null;
+      // }
+      return (
+        <Provider store={this.state.store}>
+          <Main />
+        </Provider>
+      );
+    }
+  }
+
+  return Root;
+}
+
+module.exports = setup;

@@ -18,12 +18,18 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE
+ *
  * @flow
  */
 
 'use strict';
 
-const {AppRegistry}=require('react-native');
-const setup = require('./js/setup');
+export type Action =
+    { type: 'SWITCH_TAB', tab: 'watchfaces' | 'exts' | 'apps' | 'settings' | 'watches' | 'utils' | 'exit' }
+  | { type: 'WATCH_FOUND' }
+  ;
 
-AppRegistry.registerComponent('osswReactNative', setup);
+  export type Dispatch = (action: Action | ThunkAction | PromiseAction | Array<Action> ) => any;
+  export type GetState = () => Object;
+  export type ThunkAction = (dispatch: Dispatch, getState: GetState) => any;
+  export type PromiseAction = Promise<Action>;
