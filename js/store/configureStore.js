@@ -11,7 +11,7 @@ var isDebuggingInChrome = __DEV__ && !!window.navigator.userAgent;
 function configureStore(onComplete: ?()=>void){
   const store = createStore(reducers);
 
-  onComplete();
+  setTimeout(onComplete, 10);
 
   if(isDebuggingInChrome){
       window.store = store;

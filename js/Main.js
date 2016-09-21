@@ -8,10 +8,10 @@ var View = require('View');
 var WatchesView = require('./Views/Watches');
 var Header = require('./Header');
 var Menu = require('./Menu');
+var Footer = require('./Footer');
 
 var { connect } = require('react-redux');
 
-const Dimensions = require('Dimensions');
 const SplitViewWindows = require('SplitViewWindows');
 const DRAWER_WIDTH_LEFT = 280;
 
@@ -34,9 +34,10 @@ class Main extends React.Component {
               title = {this.getTitle()}
               style = {styles.header}
             />
-            <View styles={styles.content}>
+            <View style={styles.content}>
               {this.renderContent()}
             </View>
+            <Footer style={styles.footer}/>
           </View>
         </SplitViewWindows>
       )
@@ -87,7 +88,6 @@ class Main extends React.Component {
     }
 
   _renderPaneContent() {
-    console.log(this);
     return (
       <Menu
         style = {styles.paneContentWrapper}
@@ -98,21 +98,20 @@ class Main extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    //flex: 1,
-    // justifyContent: 'center',
-    // alignItems: 'center',
+    flex: 1,
+    flexDirection: 'column',
     backgroundColor: '#F5FCFF',
+    justifyContent: 'space-between'
   },
+  header: {
 
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  content: {
+    flex: 1,
+    justifyContent: 'flex-start'
+  },
+  footer: {
+
   },
 });
 
