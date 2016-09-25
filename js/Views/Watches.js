@@ -9,10 +9,14 @@ var Image = require('Image');
 var TouchableHighlight = require('TouchableHighlight');
 var StyleSheet = require('StyleSheet');
 var ListView = require('ListView');
-var Clipboard = require('Clipboard');
 
 import { NativeAppEventEmitter } from 'react-native';
 import BleManager from '../Ble/BleManager';
+import type { Device } from '../reducers/deviceScanning';
+import { getFoundDevices} from '../reducers/deviceScanning';
+import DeviceItem from '../components/devices/DeviceItem';
+
+import { deviceFound } from '../actions'
 
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
@@ -26,34 +30,44 @@ class WatchesView extends React.Component{
   props: {
     onDeviceSelected: (device:Object ) => void;
     selectedDevice: Object;
+    // shouldScan: boolean;
   };
 
   constructor(props){
     super(props);
 
-    this._data = [];
+    // this._data = [];
+    var ds = new ListView.DataSource({rowHasChanged: (r1,r2) => r1 !== r2});
 
     this.state = {
-      dataSource: new ListView.DataSource({rowHasChanged: (r1,r2) => r1 !== r2}),
+      dataSource: ds.cloneWithRows([]),
       hasWatches: false,
     }
 
-    RCTDeviceEventEmitter.addListener('BleManagerDiscoverPeripheral', this.handleDiscoverPeripheral.bind(this));
+    RCTDeviceEventEmitter.addListener('BleManagerDiscoverPeripheral',
+      this.handleDiscoverPeripheral.bind(this));
 
-    setTimeout(()=>this.handleScan(), 1000);
+    // if(this.props.shouldScan) {
+    //   // this.handleScan();
+    //   setTimeout(()=>this.handleScan(), 1000);
+    // }
   }
 
   handleScan(){
-    BleManager.scan(osswUartUuid, true).then((resolve) => console.log('Scanning done'), (reject) => console.log('failed ' + reject));
+    BleManager.scan(osswUartUuid).then((resolve) => console.log('Scanning done'), (reject) => console.log('failed ' + reject));
   }
 
-  handleDiscoverPeripheral(data){
+  handleDiscoverPeripheral(data: Device){
     console.log('Got ble data', data);
-    this._data = this._data.concat(data);
-    this.setState({
-      hasWatches: true,
-      dataSource: this.state.dataSource.cloneWithRows(this._data)
-    });
+    // this.setState({
+    //   hasWatches: true,
+    //   dataSource: this.state.dataSource.cloneWithRows({data}),
+    // });
+    this.props.onDeviceFound(data);
+  }
+
+  componentWillUnmount(){
+    BleManager.stopScan();
   }
 
   render(){
@@ -70,7 +84,7 @@ class WatchesView extends React.Component{
         <ListView
           enableEmptySections={true}
           dataSource={this.state.dataSource}
-          renderRow={this.renderRow.bind(this)}/>
+          renderRow={(data)=><DeviceItem {...data}/>}/>
       );
     } else{
       return (
@@ -79,21 +93,33 @@ class WatchesView extends React.Component{
     }
   }
 
-  selectWatch(data) {
-    console.log('selecting '+data.Name);
+  selectWatch(data: Device) {
+    console.log('selecting ' + data.name);
     this.props.onDeviceSelected(data);
   }
 
   renderRow(data) {
+    var textStyle;
+    if(data.state === "Disconnected"){
+      textStyle = styles.disconnected;
+    }
     return (
       <TouchableHighlight
         onPress={this.selectWatch.bind(this, data)}
         underlayColor='transparent'>
-        <View style={styles.itemContainer}>
-          <Image
-            style={styles.image}
-            source={require('../Images/watch.png')}/>
-          <Text>{data.Name}</Text>
+        <View>
+          <View style={styles.row}>
+            <View style={styles.itemContainer}>
+              <Text style={textStyle}>{data.name}</Text>
+              <Text style={textStyle}>{data.state}</Text>
+            </View>
+          </View>
+          <View style={styles.row}>
+            <View style={styles.itemContainer}>
+              <Text style={[styles.subtext,textStyle]}>{data.address}</Text>
+              <Text style={[styles.subtext,textStyle]}>{data.rssi}</Text>
+            </View>
+          </View>
         </View>
       </TouchableHighlight>
     );
@@ -107,11 +133,15 @@ var styles = StyleSheet.create({
     justifyContent: 'flex-start',
     padding: 20,
   },
+  row: {
+    flexDirection: 'column',
+    justifyContent: 'flex-start'
+  },
   itemContainer:{
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    justifyContent: 'space-between',
+    // alignItems: 'center',
   },
   image: {
     width: 34,
@@ -121,11 +151,20 @@ var styles = StyleSheet.create({
   text: {
     padding: 10,
   },
+  subtext: {
+    fontSize: 12,
+    // color: 'gray',
+  },
+  disconnected: {
+    color: '#777',
+  }
 });
 
 function select(store) {
   return {
-    selectedDevice: store.watches.device,
+    // selectedDevice: store.deviceScanning.device,
+    devices: getFoundDevices(store.devices),
+    // shouldScan: store.devices.shouldScan,
   };
 }
 
@@ -133,6 +172,9 @@ function actions(dispatch) {
   return {
     onDeviceSelected: (device)=>{
       dispatch(selectDevice(device));
+    },
+    onDeviceFound: (device) => {
+      dispatch(deviceFound(device));
     },
   };
 }

@@ -6,9 +6,11 @@ var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var View = require('View');
 var WatchesView = require('./Views/Watches');
-var Header = require('./Header');
+import Header from './Header';
 var Menu = require('./Menu');
 var Footer = require('./Footer');
+
+import DevicesContainer from './containers/DevicesContainer';
 
 var { connect } = require('react-redux');
 
@@ -33,6 +35,7 @@ class Main extends React.Component {
               onPress={() => this.splitView.openPane()}
               title = {this.getTitle()}
               style = {styles.header}
+              setOptionsMenu={()=>this.getOptionsMenu()}
             />
             <View style={styles.content}>
               {this.renderContent()}
@@ -58,9 +61,15 @@ class Main extends React.Component {
         case 'settings':
           return "Settings";
       }
-      return (
-        <Text>Unknown</Text>
-      );
+      return "Unknown";
+    }
+
+    getOptionsMenu(){
+      switch(this.props.activeTab){
+        case 'watches':
+          return "Scan";
+      }
+      return '';
     }
 
     _closePane() {
@@ -78,7 +87,7 @@ class Main extends React.Component {
         case 'exts':
           return (<Text>Extensions</Text>);
         case 'watches':
-          return <WatchesView/>;
+          return <DevicesContainer/>;
         case 'settings':
           return (<Text>Settings</Text>);
       }

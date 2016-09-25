@@ -19,12 +19,13 @@ type State = {
 
 const initialState: State = {tab:'watchfaces',};
 
-function navigation(state: State = initialState, action: Action): State{
+const navigation = (state: State = initialState, action: Action): State => {
   if(action.type === 'SWITCH_TAB'){
     return {...state, tab: action.tab };
   }
-  
+
   return state;
 }
-
-module.exports = navigation;
+export default navigation;
+//
+// module.exports = navigation;

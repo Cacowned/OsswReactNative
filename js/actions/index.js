@@ -3,9 +3,9 @@
 'use strict';
 
 const navigationActions = require('./navigation');
-const watchesActions = require('./watches');
+const deviceScanningActions = require('./deviceScanning');
 
 module.exports = {
   ...navigationActions,
-  ...watchesActions,
+  ...deviceScanningActions,
 };

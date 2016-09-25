@@ -2,9 +2,16 @@
 
 'use strict';
 
-var { combineReducers } = require('redux');
+import { combineReducers } from 'redux';
+import devices, * as fromDevices from './deviceScanning';
+import navigation from './navigation';
 
-module.exports = combineReducers({
-  navigation: require('./navigation'),
-  watches: require('./watches'),
-});
+export default combineReducers({
+  navigation,
+  devices,
+  });
+
+// module.exports = combineReducers({
+//   navigation: require('./navigation'),
+//   deviceScanning: require('./deviceScanning'),
+// });

@@ -2,14 +2,14 @@
 
 'use strict';
 
-import {createStore} from 'redux';
-
-var reducers = require('../reducers');
+import {createStore, applyMiddleware} from 'redux';
+import thunk from 'redux-thunk';
+import reducers from '../reducers';
 
 var isDebuggingInChrome = __DEV__ && !!window.navigator.userAgent;
 
 function configureStore(onComplete: ?()=>void){
-  const store = createStore(reducers);
+  const store = createStore(reducers, applyMiddleware(thunk));
 
   setTimeout(onComplete, 10);
 

@@ -11,11 +11,15 @@ import {
   View
 } from 'react-native';
 
+import { startScanning, stopScanning } from './actions';
+var { connect } = require('react-redux');
+
 class Header extends React.Component{
   constructor(props:{
     title: ?string,
     onPress: Function,
     style: ?any,
+    setOptionsMenu: ?Function,
   }){
     super(props);
   }
@@ -33,12 +37,26 @@ class Header extends React.Component{
         <View style={[styles.titleContainer]}>
           <Text style={[styles.title]}>{this.props.title}</Text>
         </View>
+        <TouchableHighlight
+          underlayColor='transparent'
+          onPress={this.onToggleScan.bind(this)}
+          style={[styles.button, styles.options]}>
+            <Text style={styles.optionItem}>{this.props.setOptionsMenu()}</Text>
+          </TouchableHighlight>
       </View>
     );
   }
+
+  onToggleScan() {
+    if(this.props.isScanning){
+      this.props.stopScanning();
+    }else{
+      this.props.startScanning();
+    }
+  }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   header:{
     flexDirection: 'row',
     backgroundColor: '#424242',
@@ -49,6 +67,12 @@ var styles = StyleSheet.create({
   },
   menu:{
     flex: 1,
+  },
+  options:{
+    justifyContent: 'center',
+  },
+  optionItem:{
+    color: 'white',
   },
   titleContainer:{
     alignItems: 'flex-start',
@@ -64,4 +88,17 @@ var styles = StyleSheet.create({
   }
 });
 
-module.exports = Header;
+const mapStateToProps = state => ({
+    isScanning: state.devices.isScanning,
+});
+
+const mapDispatchToProps = dispatch =>({
+  startScanning: () => {
+    dispatch(startScanning());
+  },
+  stopScanning: () => {
+    dispatch(stopScanning());
+  }
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header);

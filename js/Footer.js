@@ -9,6 +9,7 @@ var View = require('View');
 var Image = require('Image');
 
 var { connect } = require('react-redux');
+import { Device } from './reducers/deviceScanning';
 
 class Footer extends React.Component {
   constructor(props){
@@ -25,9 +26,9 @@ class Footer extends React.Component {
   }
 
   getDeviceName(){
-    if(this.props.device !== undefined){
-      return this.props.device.Name;
-    }
+    // if(this.props.device !== null){
+    //   return this.props.device.name;
+    // }
     return "No watch";
   }
 }
@@ -48,9 +49,13 @@ var styles = StyleSheet.create({
   }
 });
 
+Footer.propTypes = {
+  device: React.PropTypes.object,
+};
+
 function select(store){
   return {
-    device: store.watches.device,
+    // device: store.deviceScanning.device,
   };
 }
 
