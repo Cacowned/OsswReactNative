@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Windows.ApplicationModel.Core;
 using Windows.Devices.Bluetooth;
@@ -7,6 +8,8 @@ using Windows.Devices.Bluetooth.Advertisement;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Enumeration;
 using Windows.Media.Core;
+using Windows.Security.Cryptography;
+using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
@@ -14,17 +17,25 @@ using ReactNative.Modules.Core;
 
 namespace BleManager
 {
-    public class BleModule : ReactContextNativeModuleBase
+    public class BleModule : ReactContextNativeModuleBase, ILifecycleEventListener
     {
         public BleModule(ReactContext reactContext) : base(reactContext)
-        {
-            watcher = new BluetoothLEAdvertisementWatcher();
-            watcher.Received += WatcherOnReceived;
-        }
+        { }
 
         public override string Name => "BleManager";
 
-        private readonly BluetoothLEAdvertisementWatcher watcher;
+        private readonly BluetoothLEAdvertisementWatcher watcher = new BluetoothLEAdvertisementWatcher();
+        private BluetoothLEDevice connectedDevice;
+        private readonly Dictionary<ulong, BlePeripheral> discoveredDevices = new Dictionary<ulong, BlePeripheral>();
+        private Guid serviceUUID;
+
+
+        public override void Initialize()
+        {
+            Context.AddLifecycleEventListener(this);
+
+            watcher.Received += WatcherOnReceived;
+        }
 
         [ReactMethod]
         public void scan(string serviceUUID, IPromise promise)
@@ -39,45 +50,47 @@ namespace BleManager
                 promise.Resolve(null);
             }
 
-//            RunOnDispatcher(async () =>
-//            {
-                try
+            //            RunOnDispatcher(async () =>
+            //            {
+            try
+            {
+                this.serviceUUID = Guid.Empty;
+                if (!string.IsNullOrWhiteSpace(serviceUUID))
                 {
-                    Guid guid = GattServiceUuids.GenericAccess;
-                    if (!string.IsNullOrWhiteSpace(serviceUUID))
-                    {
-                        guid = new Guid(serviceUUID);
-                    }
-                    
-//                    watcher.AdvertisementFilter = new BluetoothLEAdvertisementFilter
-//                    {
-//                        Advertisement = new BluetoothLEAdvertisement {ServiceUuids = {guid}}
-//                    };
-                    
-                    watcher.Start();
-
-//                    var result = await DeviceInformation.FindAllAsync(BluetoothLEDevice.GetDeviceSelector());
-//
-//                    if (result.Count > 0)
-//                    {
-//                        foreach (var device in result)
-//                        {
-//                            var ble = await BluetoothLEDevice.FromIdAsync(device.Id);
-//                            SendEvent("BleManagerDiscoverPeripheral", ConvertBleDevice(ble));
-//                        }
-                        promise.Resolve(null);
-//                    }
-//                    else
-//                    {
-//                        promise.Reject("", "Is bluetooth on?");
-//                    }
-
+                    this.serviceUUID = new Guid(serviceUUID);
                 }
-                catch (Exception ex)
-                {
-                    promise.Reject(ex);
-                }
-//            });
+
+                //                    watcher.AdvertisementFilter = new BluetoothLEAdvertisementFilter
+                //                    {
+                //                        Advertisement = new BluetoothLEAdvertisement {ServiceUuids = {guid}}
+                //                    };
+
+                //                watcher.ScanningMode = BluetoothLEScanningMode.Passive;
+                discoveredDevices.Clear();
+                watcher.Start();
+
+                //                    var result = await DeviceInformation.FindAllAsync(BluetoothLEDevice.GetDeviceSelector());
+                //
+                //                    if (result.Count > 0)
+                //                    {
+                //                        foreach (var device in result)
+                //                        {
+                //                            var ble = await BluetoothLEDevice.FromIdAsync(device.Id);
+                //                            SendEvent("BleManagerDiscoverPeripheral", ConvertBleDevice(ble));
+                //                        }
+                promise.Resolve(null);
+                //                    }
+                //                    else
+                //                    {
+                //                        promise.Reject("", "Is bluetooth on?");
+                //                    }
+
+            }
+            catch (Exception ex)
+            {
+                promise.Reject(ex);
+            }
+            //            });
 
         }
 
@@ -94,20 +107,26 @@ namespace BleManager
                 promise.Resolve(null);
             }
 
-            watcher.Stop();            
+            watcher.Stop();
         }
-
+        
         private void WatcherOnReceived(BluetoothLEAdvertisementWatcher sender, BluetoothLEAdvertisementReceivedEventArgs args)
         {
-            SendEvent("BleManagerDiscoverPeripheral", new JObject
+            BlePeripheral peripheral;
+            if (discoveredDevices.TryGetValue(args.BluetoothAddress, out peripheral))
             {
-                {"deviceId", "deviceId"},
-                {"address", Utils.ToStringAddress(args.BluetoothAddress) },
-                {"name", args.Advertisement.LocalName },
-                {"state", "Disconnected" },
-                {"rssi", args.RawSignalStrengthInDBm+"dBm"},
-//                {"services", ConvertServices(device) }
-            });
+                peripheral.UpdateFromAdvertisement(args.Advertisement, args.RawSignalStrengthInDBm);
+            }
+            else
+            {
+                peripheral = BlePeripheral.FromAdvertisement(args);
+                discoveredDevices.Add(args.BluetoothAddress, peripheral);
+            }
+
+            if (serviceUUID == Guid.Empty || peripheral.ServiceGuids.Contains(serviceUUID))
+            {
+                SendEvent("BleManagerDiscoverPeripheral", ConvertBleDevice(peripheral));
+            }
         }
 
         [ReactMethod]
@@ -117,14 +136,16 @@ namespace BleManager
         }
 
         [ReactMethod]
-        public void connect(string deviceId, IPromise promise)
+        public void connect(string deviceAdress, IPromise promise)
         {
+            connectedDevice?.Dispose();
+
             RunOnDispatcher(async () =>
             {
                 try
                 {
-                    var ble = await BluetoothLEDevice.FromIdAsync(deviceId);
-
+                    connectedDevice = await BluetoothLEDevice.FromBluetoothAddressAsync(Utils.ToDeviceAddress(deviceAdress));
+                    promise.Resolve(null);
                 }
                 catch (Exception ex)
                 {
@@ -134,26 +155,25 @@ namespace BleManager
             });
         }
 
-        private static JObject ConvertBleDevice(BluetoothLEDevice device)
+        private static JObject ConvertBleDevice(BlePeripheral device)
         {
             return new JObject
             {
-                {"deviceId", device.DeviceId },
-                {"address", Utils.ToStringAddress(device.BluetoothAddress) },
-                {"name", device.Name },
-                {"state", device.ConnectionStatus.ToString() },
-                {"rssi", "dBm"},
-                {"services", ConvertServices(device) }
+                {"address", Utils.ToStringAddress(device.Address) },
+                {"name", device.LocalName },
+                {"state", "Disconnected" },
+                {"rssi", device.RawSignalStrengthInDBm + "dBm"},
+//                {"services", ConvertServices(device) }
             };
         }
 
-        private static JArray ConvertServices(BluetoothLEDevice device)
+        private static JArray ConvertServices(BlePeripheral device)
         {
             JArray result = new JArray();
 
-            foreach (var gattDeviceService in device.GattServices)
+            foreach (var gattDeviceService in device.ServiceGuids)
             {
-                result.Add(ConvertService(gattDeviceService));
+//                result.Add(ConvertService(gattDeviceService));
             }
 
             return result;
@@ -186,6 +206,29 @@ namespace BleManager
         private void SendEvent(string eventName, JObject parameters)
         {
             Context.GetJavaScriptModule<RCTDeviceEventEmitter>().emit(eventName, parameters);
+        }
+
+        public void OnSuspend()
+        {
+            watcher.Stop();
+            watcher.Received -= WatcherOnReceived;
+
+            connectedDevice?.Dispose();
+            connectedDevice = null;
+        }
+
+        public void OnResume()
+        {
+            watcher.Received += WatcherOnReceived;
+        }
+
+        public void OnDestroy()
+        {
+            watcher.Stop();
+            watcher.Received -= WatcherOnReceived;
+
+            connectedDevice?.Dispose();
+            connectedDevice = null;
         }
     }
 }

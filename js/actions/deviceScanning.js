@@ -13,14 +13,19 @@ export const SELECT_DEVICE = 'SELECT_DEVICE';
 export const START_SCANNING = 'START_SCANNING';
 export const DEVICE_FOUND = 'DEVICE_FOUND';
 
-export const selectDevice = (device: Device): Action =>({
-    type: SELECT_DEVICE,
-    device,
-});
+export const selectDevice = (device: Device): ThunkAction =>{
+  return (dispatch) => {
+    BleManager.connect(device.address)
+
+    dispatch({
+      type: SELECT_DEVICE,
+      device: device,
+    });
+  };
+};
 
 export const stopScanning = (): ThunkAction => {
   return (dispatch) => {
-    debugger;
     BleManager.stopScan();
 
     return dispatch({

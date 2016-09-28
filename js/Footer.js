@@ -26,9 +26,9 @@ class Footer extends React.Component {
   }
 
   getDeviceName(){
-    // if(this.props.device !== null){
-    //   return this.props.device.name;
-    // }
+    if(this.props.device !== null){
+      return this.props.device.name;
+    }
     return "No watch";
   }
 }
@@ -55,7 +55,7 @@ Footer.propTypes = {
 
 function select(store){
   return {
-    // device: store.deviceScanning.device,
+     device: store.devices.activeDevice,
   };
 }
 

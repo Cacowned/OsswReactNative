@@ -11,7 +11,6 @@ import type {Action} from '../actions/types';
 var { combineReducers } = require('redux');
 
 export type Device = {
-  deviceId: string;
   name: string;
   address: string;
   state: string;
@@ -25,6 +24,15 @@ type State = {
 
 const initialState: State = {device: null, isScanning: false};
 
+const activeDevice = (state = initialState.device, action) => {
+  switch(action.type){
+    case SELECT_DEVICE:
+      return action.device;
+    default:
+      return state;
+  }
+};
+
 const isScanning = (state = initialState.isScanning, action) => {
   switch(action.type){
     case STOP_SCANNING:
@@ -36,50 +44,34 @@ const isScanning = (state = initialState.isScanning, action) => {
   }
 };
 
-// function device(state: Device = initialState.device, action: Action): State {
+// const devices = (state, action) => {
+//   debugger;
 //   switch(action.type){
 //     case SELECT_DEVICE:
-//       return {...state, device: action.device};
-//     case DEVICE_FOUND:
-//       return {...state, device: action.device};
+//       return{
+//         ...state,
+//         selected: true,
+//       }
 //     default:
 //       return state;
 //   }
-// }
+// };
 
-// const rootReducer = combineReducers({
-//   shouldScan,
-//   device,
-// });
-// module.exports=rootReducer;
-
-const devices = (state, action) => {
-  switch(action.type){
-    case SELECT_DEVICE:
-      return{
-        ...state,
-        selected: true,
-      }
-    default:
-      return state;
-  }
-};
-
-const byId = (state={}, action) => {
+const byAddress = (state={}, action) => {
   switch(action.type){
     case DEVICE_FOUND:
       return {
         ...state,
-        [action.device.deviceId]: action.device,
+        [action.device.address]: action.device,
       }
     default:
-      const {device} = action;
-      if(device){
-        return {
-          ...state,
-          [device.deviceId]: devices(state[device.deviceId], action),
-        };
-      }
+      // const {device} = action;
+      // if(device){
+      //   return {
+      //     ...state,
+      //     [device.deviceId]: devices(state[device.deviceId], action),
+      //   };
+      // }
       return state;
   }
 };
@@ -87,8 +79,8 @@ const byId = (state={}, action) => {
 const foundDevices = (state = [], action) => {
   switch(action.type){
     case DEVICE_FOUND:
-      if(state.indexOf(action.device.deviceId) === -1){
-        return state.concat(action.device.deviceId);
+      if(state.indexOf(action.device.address) === -1){
+        return state.concat(action.device.address);
       }
       return state;
     default:
@@ -97,12 +89,13 @@ const foundDevices = (state = [], action) => {
 };
 
 export default combineReducers({
-  byId,
+  byAddress,
   foundDevices,
   isScanning,
+  activeDevice,
 });
 
-export const getDevice = (state, id) => state.byId[id];
+export const getDevice = (state, address) => state.byAddress[address];
 
 export const getFoundDevices = state =>
-  state.foundDevices.map(id => getDevice(state, id));
+  state.foundDevices.map(address => getDevice(state, address));

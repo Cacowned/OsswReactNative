@@ -107,6 +107,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BlePeripheral.cs" />
     <Compile Include="BleManagerPackage.cs" />
     <Compile Include="BleModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

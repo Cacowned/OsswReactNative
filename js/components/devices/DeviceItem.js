@@ -27,24 +27,25 @@ const styles = StyleSheet.create({
 
 const DeviceItem = (props) => {
   var textStyle;
-  if(props.state === "Disconnected"){
+  if(props.device.state === "Disconnected"){
     textStyle = styles.disconnected;
   }
+  // debugger;
   return (
     <TouchableHighlight
-      // onPress={this.selectWatch.bind(this, data)}
+      onPress={()=>props.onDeviceSelected()}
       underlayColor='transparent'>
       <View>
         <View style={styles.row}>
           <View style={styles.itemContainer}>
-            <Text style={textStyle}>{props.name}</Text>
-            <Text style={textStyle}>{props.state}</Text>
+            <Text style={textStyle}>{props.device.name}</Text>
+            <Text style={textStyle}>{props.device.state}</Text>
           </View>
         </View>
         <View style={styles.row}>
           <View style={styles.itemContainer}>
-            <Text style={[styles.subtext,textStyle]}>{props.address}</Text>
-            <Text style={[styles.subtext,textStyle]}>{props.rssi}</Text>
+            <Text style={[styles.subtext,textStyle]}>{props.device.address}</Text>
+            <Text style={[styles.subtext,textStyle]}>{props.device.rssi}</Text>
           </View>
         </View>
       </View>
