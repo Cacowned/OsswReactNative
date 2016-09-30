@@ -11,6 +11,7 @@ var Menu = require('./Menu');
 var Footer = require('./Footer');
 
 import DevicesContainer from './containers/DevicesContainer';
+import WatchSetsContainer from './containers/WatchSetsContainer';
 
 var { connect } = require('react-redux');
 
@@ -79,7 +80,7 @@ class Main extends React.Component {
     renderContent(){
       switch(this.props.activeTab){
         case 'watchfaces':
-          return (<Text>Watch Faces</Text>);
+          return (<WatchSetsContainer/>);
         case 'apps':
           return (<Text>Applications</Text>);
         case 'utils':
