@@ -215,6 +215,10 @@
       <Project>{6db0375b-b2f3-49ac-ad77-4a97ac418394}</Project>
       <Name>FilePickerManager</Name>
     </ProjectReference>
+    <ProjectReference Include="..\FSManager\FSManager.csproj">
+      <Project>{93a98120-470f-471c-a58f-29cb18576e80}</Project>
+      <Name>FSManager</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'ReleaseBundle' or '$(Configuration)' == 'DebugBundle'">
     <Content Include="ReactAssets\**\*">

@@ -9,6 +9,8 @@ var { AsyncStorage } = require('react-native');
 import { persistStore, autoRehydrate } from 'redux-persist';
 import createFilter from 'redux-persist-transform-filter';
 
+import BleManager from '../Ble/BleManager';
+
 var isDebuggingInChrome = __DEV__ && !!window.navigator.userAgent;
 
 function configureStore(onComplete: ?()=>void) {
@@ -39,7 +41,7 @@ function configureStore(onComplete: ?()=>void) {
     console.log('rehydrateState', rehydrateState);
     console.log('state after', store.getState());
     if(store.getState().devices.activeDevice){
-      // BleManager.connect();
+      // BleManager.connect(store.getState().devices.activeDevice.address);
     }
   });
 

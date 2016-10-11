@@ -34,7 +34,16 @@ namespace FilePickerManager
                     }
                 }
                 var file = await fileOpenPicker.PickSingleFileAsync();
-                promise.Resolve(file.Path);
+                if (file != null)
+                {
+                    var token = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(file);
+                    promise.Resolve(token);
+                }
+                else
+                {
+                    promise.Reject("cancelled", "cancelled");
+                }
+                
             });
         }
 

@@ -15,6 +15,7 @@ import WatchSetsContainer from './containers/WatchSetsContainer';
 import type { OptionItem } from './options/types';
 
 var FilePickerManager = require('NativeModules').FilePickerManager;
+var FSManager = require('NativeModules').FSManager;
 
 const SplitViewWindows = require('SplitViewWindows');
 const DRAWER_WIDTH_LEFT = 280;
@@ -84,8 +85,13 @@ class Main extends React.Component {
               viewMode: "list",
               fileTypeFilter: ".json",
             })
-              .then((result)=>
-                console.log(result)
+              .then((result: string)=>{
+                FSManager.readFile(result)
+                  .then((result) => {
+                    debugger;
+                    console.log(result);
+                  })
+              }
               );
           },
         };
