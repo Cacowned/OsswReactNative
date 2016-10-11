@@ -21,39 +21,39 @@ export const selectDevice = (device: Device): ThunkAction =>{
       .then(()=>{
         BleManager.read(device.address, batteryServiceUuid, batteryCharUuid)
           .then((data)=>{
-            debugger;
+            console.log(data);
           });
       });
-
-    dispatch({
-      type: SELECT_DEVICE,
-      device: device,
-    });
+      dispatch(({
+        type: SELECT_DEVICE,
+        device: device,
+      }:any));
   };
 };
 
 export const stopScanning = (): ThunkAction => {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     BleManager.stopScan();
 
-    return dispatch({
+    dispatch(({
         type: STOP_SCANNING,
+    } : any));
+  };
+};
+
+export const startScanning = () : ThunkAction => {
+  return (dispatch : Function, getState : Function) => {
+    BleManager.scan(osswUartUuid);
+    dispatch({
+      type: START_SCANNING,
     });
   };
 };
 
-export const startScanning = () => (dispatch, getState) => {
-  BleManager.scan(osswUartUuid);
-
-  dispatch({
-    type: START_SCANNING,
-  });
-};
-
-export const deviceFound = (device: Device): Action => ({
+export const deviceFound = (device: Device): Action => (({
   type: DEVICE_FOUND,
   device,
-});
+} : any));
 
 // export const deviceFound = (device: Device) => (dispatch, getState) => {
 //   dispatch(_deviceFound(device));

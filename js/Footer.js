@@ -9,7 +9,7 @@ var View = require('View');
 var Image = require('Image');
 
 var { connect } = require('react-redux');
-import { Device } from './reducers/deviceScanning';
+import type { Device } from './reducers/deviceScanning';
 
 class Footer extends React.Component {
   constructor(props){
@@ -25,7 +25,7 @@ class Footer extends React.Component {
     );
   }
 
-  getDeviceName(){
+  getDeviceName() {
     if(this.props.device !== null){
       return this.props.device.name;
     }

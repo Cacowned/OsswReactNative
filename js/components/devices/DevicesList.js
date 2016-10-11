@@ -6,19 +6,19 @@ import {View, ListView, StyleSheet} from 'react-native';
 import DeviceItem from './DeviceItem';
 
 class DevicesList extends React.Component{
-  constructor(props){
+  constructor(props : Object){
     super(props);
     var ds = new ListView.DataSource({rowHasChanged: (r1,r2) => r1 !== r2});
-    this.state = {
+    this.state = ({
       dataSource: ds.cloneWithRows(props.devices),
-    }
+    } : any);
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps : Object) {
     if(nextProps.devices !== this.props.devices){
-      this.setState({
+      this.setState(({
         dataSource: this.state.dataSource.cloneWithRows(nextProps.devices),
-      });
+      }:any));
     }
   }
 

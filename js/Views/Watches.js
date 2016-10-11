@@ -39,10 +39,10 @@ class WatchesView extends React.Component{
     // this._data = [];
     var ds = new ListView.DataSource({rowHasChanged: (r1,r2) => r1 !== r2});
 
-    this.state = {
+    this.state = ({
       dataSource: ds.cloneWithRows([]),
       hasWatches: false,
-    }
+    } : any);
 
     RCTDeviceEventEmitter.addListener('BleManagerDiscoverPeripheral',
       this.handleDiscoverPeripheral.bind(this));

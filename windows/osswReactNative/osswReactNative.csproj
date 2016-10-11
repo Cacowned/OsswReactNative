@@ -211,6 +211,10 @@
       <Project>{caf1766b-723a-4655-bcf7-db2e75f27013}</Project>
       <Name>BleManager</Name>
     </ProjectReference>
+    <ProjectReference Include="..\FilePickerManager\FilePickerManager.csproj">
+      <Project>{6db0375b-b2f3-49ac-ad77-4a97ac418394}</Project>
+      <Name>FilePickerManager</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'ReleaseBundle' or '$(Configuration)' == 'DebugBundle'">
     <Content Include="ReactAssets\**\*">

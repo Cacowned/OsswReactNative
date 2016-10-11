@@ -1,10 +1,9 @@
 /* @flow */
 
 'use strict';
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var Text = require('Text');
-var View = require('View');
+import React, { PropTypes } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+
 var WatchesView = require('./Views/Watches');
 import Header from './Header';
 var Menu = require('./Menu');
@@ -13,14 +12,16 @@ var Footer = require('./Footer');
 import DevicesContainer from './containers/DevicesContainer';
 import WatchSetsContainer from './containers/WatchSetsContainer';
 
-var { connect } = require('react-redux');
+import type { OptionItem } from './options/types';
+
+var FilePickerManager = require('NativeModules').FilePickerManager;
 
 const SplitViewWindows = require('SplitViewWindows');
 const DRAWER_WIDTH_LEFT = 280;
 
 class Main extends React.Component {
 
-  constructor(props: Props) {
+  constructor(props: Object) {
     super(props);
   }
 
@@ -36,7 +37,7 @@ class Main extends React.Component {
               onPress={() => this.splitView.openPane()}
               title = {this.getTitle()}
               style = {styles.header}
-              setOptionsMenu={()=>this.getOptionsMenu()}
+              optionsMenu={this.getOptionsMenu()}
             />
             <View style={styles.content}>
               {this.renderContent()}
@@ -65,12 +66,46 @@ class Main extends React.Component {
       return "Unknown";
     }
 
-    getOptionsMenu(){
+    getOptionsMenu(): OptionItem{
       switch(this.props.activeTab){
         case 'watches':
-          return "Scan";
+          return {
+            title:"Scan",
+            action: ()=>{
+              this.onToggleScan();
+            }
+          }
+          // return "Scan";
+        case "watchfaces":
+        return {
+          title: "Import",
+          action: ()=>{
+            FilePickerManager.showFilePicker({
+              viewMode: "list",
+              fileTypeFilter: ".json",
+            })
+              .then((result)=>
+                console.log(result)
+              );
+          },
+        };
+          // return "Import";
       }
-      return '';
+      return {
+        title: "",
+        action: ()=>{
+
+        },
+      };
+      // return '';
+    }
+
+    onToggleScan() {
+      if(this.props.isScanning){
+        this.props.stopScanning();
+      }else{
+        this.props.startScanning();
+      }
     }
 
     _closePane() {
@@ -106,6 +141,14 @@ class Main extends React.Component {
   }
 }
 
+Main.propTypes = {
+  activeDevice: PropTypes.object,
+  activeTab: PropTypes.string.isRequired,
+  isScanning: PropTypes.bool.isRequired,
+  startScanning: PropTypes.func.isRequired,
+  stopScanning: PropTypes.func.isRequired,
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -125,10 +168,4 @@ const styles = StyleSheet.create({
   },
 });
 
-function select(store){
-  return {
-    activeTab: store.navigation.tab,
-  };
-}
-
-module.exports = connect(select)(Main);
+export default Main;

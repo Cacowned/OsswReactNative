@@ -38,10 +38,14 @@ function configureStore(onComplete: ?()=>void) {
     onComplete();
     console.log('rehydrateState', rehydrateState);
     console.log('state after', store.getState());
+    if(store.getState().devices.activeDevice){
+      // BleManager.connect();
+    }
   });
 
   if(isDebuggingInChrome){
       window.store = store;
+      window.safelyClearStorage = () => AsyncStorage.clear();
   }
   return store;
 }

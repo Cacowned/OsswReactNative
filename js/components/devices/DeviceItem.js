@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   }
 });
 
-const DeviceItem = (props) => {
+const DeviceItem = (props : Object) => {
   var textStyle;
   if(props.device.state === "Disconnected"){
     textStyle = styles.disconnected;

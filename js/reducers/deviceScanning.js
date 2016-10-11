@@ -3,7 +3,7 @@
 
 import {
   STOP_SCANNING, START_SCANNING,
-  SELECT_DEVICE, DEVICE_FOUND
+  SELECT_DEVICE, DEVICE_FOUND,
 } from '../actions/deviceScanning'
 
 import type {Action} from '../actions/types';
@@ -95,7 +95,7 @@ export default combineReducers({
   activeDevice,
 });
 
-export const getDevice = (state, address) => state.byAddress[address];
+export const getDevice = (state: Object, address: String) => state.byAddress[address];
 
-export const getFoundDevices = state =>
+export const getFoundDevices = (state : Object) =>
   state.foundDevices.map(address => getDevice(state, address));

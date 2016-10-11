@@ -5,6 +5,7 @@ using Windows.ApplicationModel.Core;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.Advertisement;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
+using Windows.Devices.Enumeration;
 using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Newtonsoft.Json.Linq;
@@ -45,9 +46,60 @@ namespace BleManager
             {
                 promise.Resolve(null);
             }
+            //
+            //            RunOnDispatcher(async () =>
+            //            {
+            //                try
+            //                {
+            //                    var result =
+            //                    await DeviceInformation.FindAllAsync(GattDeviceService.GetDeviceSelectorFromUuid(GattServiceUuids.GenericAccess));
+            //
+            //                    if (result.Any())
+            //                    {
+            //                        foreach (var device in result)
+            //                        {
+            //                            if (device.Pairing.CanPair)
+            //                            {
+            //                                var pairingResult = await device.Pairing.PairAsync(DevicePairingProtectionLevel.None);
+            //
+            //                                if (pairingResult.Status == DevicePairingResultStatus.Paired)
+            //                                {
+            //
+            //                                }
+            //                            }
+            //                            else if (device.Pairing.IsPaired)
+            //                            {
+            //                                var ble = await BluetoothLEDevice.FromIdAsync(device.Id);
+            //                                if (ble.ConnectionStatus == BluetoothConnectionStatus.Connected)
+            //                                {
+            //
+            //                                }
+            //                                SendEvent("BleManagerDiscoverPeripheral", new JObject
+            //                                    {
+            //                                        {"address", Utils.ToStringAddress(ble.BluetoothAddress) },
+            //                                        {"name", device.Name },
+            //                                        {"state", "Disconnected" },
+            //                                        {"rssi", "0dBm"},
+            //                        //                {"services", ConvertServices(device) }
+            //                                    });
+            //
+            //                                promise.Resolve(null);
+            //                            }
+            //                        }
+            //                    }
+            //
+            //                }
+            //                catch (Exception ex)
+            //                {
+            //                    promise.Reject(ex);
+            //                }
+            //            });
+
 
             try
             {
+
+
                 this.serviceUUID = Guid.Empty;
                 if (!string.IsNullOrWhiteSpace(serviceUUID))
                 {
@@ -98,7 +150,7 @@ namespace BleManager
                         {
                             byte[] data = new byte[result.Value.Length];
                             DataReader.FromBuffer(result.Value).ReadBytes(data);
-                            
+
                             promise.Resolve(new JObject
                             {
                                 // Hack to prevent byte array to be serialized as base64 string
@@ -121,7 +173,7 @@ namespace BleManager
         [ReactMethod]
         public void connect(string deviceAdress, IPromise promise)
         {
-            connectedDevice?.Dispose();
+            ReleaseConnectedDevice();
 
             RunOnDispatcher(async () =>
             {
@@ -130,6 +182,7 @@ namespace BleManager
                     ulong address = Utils.ToDeviceAddress(deviceAdress);
 
                     connectedDevice = await BluetoothLEDevice.FromBluetoothAddressAsync(address);
+                    connectedDevice.ConnectionStatusChanged += ConnectedDeviceOnConnectionStatusChanged;
 
                     if (!discoveredDevices.ContainsKey(address))
                     {
@@ -147,13 +200,22 @@ namespace BleManager
             });
         }
 
+        private void ConnectedDeviceOnConnectionStatusChanged(BluetoothLEDevice sender, object args)
+        {
+            if (sender.Equals(connectedDevice))
+            {
+                SendEvent("BleManagerConnectionStatusChanged", new JObject {
+                    { "state", sender.ConnectionStatus.ToString()}
+                });
+            }
+        }
+
         [ReactMethod]
         public void disconnect(string deviceAddress, IPromise promise)
         {
             if (connectedDevice != null && connectedDevice.BluetoothAddress == Utils.ToDeviceAddress(deviceAddress))
             {
-                connectedDevice.Dispose();
-                connectedDevice = null;
+                ReleaseConnectedDevice();
                 promise.Resolve(null);
             }
             else
@@ -252,8 +314,7 @@ namespace BleManager
             watcher.Stop();
             watcher.Received -= WatcherOnReceived;
 
-            connectedDevice?.Dispose();
-            connectedDevice = null;
+            ReleaseConnectedDevice();
         }
 
         public void OnResume()
@@ -266,8 +327,17 @@ namespace BleManager
             watcher.Stop();
             watcher.Received -= WatcherOnReceived;
 
-            connectedDevice?.Dispose();
-            connectedDevice = null;
+            ReleaseConnectedDevice();
+        }
+
+        private void ReleaseConnectedDevice()
+        {
+            if (connectedDevice != null)
+            {
+                connectedDevice.ConnectionStatusChanged -= ConnectedDeviceOnConnectionStatusChanged;
+                connectedDevice?.Dispose();
+                connectedDevice = null;
+            }
         }
     }
 }

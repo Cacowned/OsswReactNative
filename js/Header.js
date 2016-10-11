@@ -2,7 +2,7 @@
 
 'use strict';
 
-import React, { Component } from 'react';
+import React, { PropTypes } from 'react';
 import {
   StyleSheet,
   Image,
@@ -11,20 +11,12 @@ import {
   View
 } from 'react-native';
 
-import { startScanning, stopScanning } from './actions';
-var { connect } = require('react-redux');
-
 class Header extends React.Component{
-  constructor(props:{
-    title: ?string,
-    onPress: Function,
-    style: ?any,
-    setOptionsMenu: ?Function,
-  }){
+  constructor(props){
     super(props);
   }
 
-  render(): ?ReactElement {
+  render() {
     return(
       <View style ={[styles.header, this.props.style]}>
         <TouchableHighlight underlayColor='transparent'
@@ -39,21 +31,20 @@ class Header extends React.Component{
         </View>
         <TouchableHighlight
           underlayColor='transparent'
-          onPress={this.onToggleScan.bind(this)}
+          onPress={this.props.optionsMenu.action}
           style={[styles.button, styles.options]}>
-            <Text style={styles.optionItem}>{this.props.setOptionsMenu()}</Text>
+            <Text style={styles.optionItem}>{this.props.optionsMenu.title}</Text>
           </TouchableHighlight>
       </View>
     );
   }
+}
 
-  onToggleScan() {
-    if(this.props.isScanning){
-      this.props.stopScanning();
-    }else{
-      this.props.startScanning();
-    }
-  }
+Header.propTypes = {
+  title: PropTypes.string.isRequired,
+  onPress: PropTypes.func.isRequired,
+  style: PropTypes.any,
+  optionsMenu: PropTypes.object.isRequired,
 }
 
 const styles = StyleSheet.create({
@@ -88,17 +79,4 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = state => ({
-    isScanning: state.devices.isScanning,
-});
-
-const mapDispatchToProps = dispatch =>({
-  startScanning: () => {
-    dispatch(startScanning());
-  },
-  stopScanning: () => {
-    dispatch(stopScanning());
-  }
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Header);
+export default Header;

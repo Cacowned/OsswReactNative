@@ -5,7 +5,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableHighlight } from 'react-native';
 
-const WatchSetItem = (props) => {
+const WatchSetItem = (props : Object) => {
   return (
     <TouchableHighlight
       onPress={()=>props.onWatchSetSelected()}

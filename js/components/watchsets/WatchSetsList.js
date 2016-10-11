@@ -8,20 +8,20 @@ import WatchSetItem from './WatchSetItem';
 
 
 class WatchSetsList extends React.Component {
-  constructor(props){
+  constructor(props: Object){
     super(props);
 
     var ds = new ListView.DataSource({rowHasChanged: (r1,r2) => r1 !== r2});
-    this.state = {
+    this.state = ({
       dataSource: ds.cloneWithRows(props.watchsets),
-    }
+    }:any);
   }
 
-  componentWillReceiveProps(nextProps){
+  componentWillReceiveProps(nextProps: Object){
     if(nextProps.watchsets !== this.props.watchsets){
-      this.setState({
+      this.setState(({
         dataSource: this.state.dataSource.cloneWithRows(nextProps.watchsets),
-      });
+      }:any));
     }
   }
 

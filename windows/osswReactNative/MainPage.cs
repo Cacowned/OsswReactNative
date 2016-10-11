@@ -3,6 +3,7 @@ using ReactNative.Modules.Core;
 using ReactNative.Shell;
 using System.Collections.Generic;
 using BleManager;
+using FilePickerManager;
 
 namespace osswReactNative
 {
@@ -24,6 +25,7 @@ namespace osswReactNative
         {
             new MainReactPackage(),
             new BleManagerPackage(),
+            new FilePickerPackage(),
         };
 
         public override bool UseDeveloperSupport => true;

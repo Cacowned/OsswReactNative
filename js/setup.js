@@ -25,7 +25,9 @@
 'use strict';
 
 var React = require('React');
-var Main = require('./Main');
+// var AppContainer = require('./containers/AppContainer');
+
+import AppContainer from './containers/AppContainer';
 
 var { Provider } = require('react-redux');
 var configureStore = require('./store/configureStore');
@@ -47,12 +49,12 @@ function setup(): ReactClass<{}>{
     }
 
     render() {
-      // if(this.state.isLoading){
-      //   return null;
-      // }
+      if(this.state.isLoading){
+        return null;
+      }
       return (
         <Provider store={this.state.store}>
-          <Main />
+          <AppContainer />
         </Provider>
       );
     }
