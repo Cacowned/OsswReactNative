@@ -4,6 +4,7 @@
 import {
   STOP_SCANNING, START_SCANNING,
   SELECT_DEVICE, DEVICE_FOUND,
+  REHYDRATE_DEVICE,
 } from '../actions/deviceScanning'
 
 import type {Action} from '../actions/types';
@@ -27,6 +28,7 @@ const initialState: State = {device: null, isScanning: false};
 const activeDevice = (state = initialState.device, action) => {
   switch(action.type){
     case SELECT_DEVICE:
+    case REHYDRATE_DEVICE:
       return action.device;
     default:
       return state;

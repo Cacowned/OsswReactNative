@@ -6,50 +6,48 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
 import reducers from '../reducers';
 var { AsyncStorage } = require('react-native');
-import { persistStore, autoRehydrate } from 'redux-persist';
-import createFilter from 'redux-persist-transform-filter';
+
+import { getDevice, getWatchSets } from '../store/storageManager';
+import { rehydrateDevice} from '../actions';
 
 import BleManager from '../Ble/BleManager';
 
 var isDebuggingInChrome = __DEV__ && !!window.navigator.userAgent;
 
+export function clearStorage(){
+  AsyncStorage.clear();
+}
+
 function configureStore(onComplete: ?()=>void) {
+  let store = createStore(reducers, applyMiddleware(thunk));
 
-  const deviceSubsetFilter = createFilter(
-    'devices',
-    ['activeDevice'],
-  )
+  var devices = getDevice()
+    .then((data)=>{
+      if(data && data.device){
+        var device = data.device;
+        console.log('restoring from storage:', device);
+        store.dispatch(rehydrateDevice(device));
+      }
+    });
 
-  const navigationSubsetFilter = createFilter(
-    'navigation',
-    null
-  )
-
-  let store = compose(
-    autoRehydrate(),
-    applyMiddleware(thunk),
-  )(createStore)(reducers);
-
-  persistStore(store, {
-    storage: AsyncStorage,
-    transforms: [
-      deviceSubsetFilter,
-      navigationSubsetFilter,
-    ]
-  }, (err, rehydrateState) =>{
-    onComplete();
-    console.log('rehydrateState', rehydrateState);
-    console.log('state after', store.getState());
-    if(store.getState().devices.activeDevice){
-      // BleManager.connect(store.getState().devices.activeDevice.address);
+  var watchsets = getWatchSets().then((data)=>{
+    if(data && data.length > 0){
+      console.log('restoring from storage:', data);
     }
   });
 
+  Promise.all([devices, watchsets])
+    .then(value => {
+      if(onComplete){
+        onComplete();
+      }
+    });
+
   if(isDebuggingInChrome){
       window.store = store;
-      window.safelyClearStorage = () => AsyncStorage.clear();
+      window.safelyClearStorage = clearStorage;
   }
   return store;
 }
 
-module.exports = configureStore;
+export default configureStore;

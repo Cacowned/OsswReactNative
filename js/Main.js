@@ -13,6 +13,9 @@ import DevicesContainer from './containers/DevicesContainer';
 import WatchSetsContainer from './containers/WatchSetsContainer';
 
 import type { OptionItem } from './options/types';
+import type { WatchSet } from './reducers/watchsets';
+
+import { getDevice, saveWatchset } from './store/storageManager';
 
 var FilePickerManager = require('NativeModules').FilePickerManager;
 var FSManager = require('NativeModules').FSManager;
@@ -89,7 +92,9 @@ class Main extends React.Component {
                 FSManager.readFile(result)
                   .then((result) => {
                     debugger;
-                    console.log(result);
+                    var watchSet : WatchSet = JSON.parse(result);
+                    console.log(watchSet);
+                    saveWatchset(watchSet);
                   })
               }
               );

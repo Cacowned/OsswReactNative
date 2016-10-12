@@ -4,7 +4,7 @@
 import type { Action, ThunkAction } from './types';
 import type { Device } from '../reducers/deviceScanning';
 import BleManager from '../Ble/BleManager';
-
+import { setDevice } from '../store/storageManager';
 
 const osswUartUuid = '58c6000120b7490496facba8e1b95702';
 const batteryServiceUuid = '0000180f00001000800000805f9b34fb';
@@ -14,20 +14,38 @@ export const STOP_SCANNING = 'STOP_SCANNING';
 export const SELECT_DEVICE = 'SELECT_DEVICE';
 export const START_SCANNING = 'START_SCANNING';
 export const DEVICE_FOUND = 'DEVICE_FOUND';
+export const REHYDRATE_DEVICE = 'REHYDRATE_DEVICE';
+
+function connectDevice(device: Device) {
+  BleManager.connect(device.address)
+    .then(()=>{
+      BleManager.read(device.address, batteryServiceUuid, batteryCharUuid)
+        .then((data)=>{
+          console.log(data);
+        });
+    });
+}
 
 export const selectDevice = (device: Device): ThunkAction =>{
   return (dispatch) => {
-    BleManager.connect(device.address)
-      .then(()=>{
-        BleManager.read(device.address, batteryServiceUuid, batteryCharUuid)
-          .then((data)=>{
-            console.log(data);
-          });
-      });
-      dispatch(({
-        type: SELECT_DEVICE,
-        device: device,
-      }:any));
+
+    setDevice(device);
+    connectDevice(device);
+
+    dispatch(({
+      type: SELECT_DEVICE,
+      device: device,
+    }:any));
+  };
+};
+
+export const rehydrateDevice = (device: Device): ThunkAction => {
+  return(dispatch, getState) => {
+    connectDevice(device);
+    dispatch(({
+      type: REHYDRATE_DEVICE,
+      device: device,
+    }:any));
   };
 };
 

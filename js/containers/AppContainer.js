@@ -4,7 +4,7 @@
 
 import { connect } from 'react-redux';
 import Main from '../Main';
-import { startScanning, stopScanning } from '../actions';
+import { startScanning, stopScanning} from '../actions';
 
 const mapStateToProps = (state) => (
   {
@@ -21,7 +21,7 @@ const mapDispatchToProps = (dispatch) => (
     },
     stopScanning: () => {
       dispatch(stopScanning());
-    }
+    },
   }
 );
 

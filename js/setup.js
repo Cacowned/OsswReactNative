@@ -30,7 +30,7 @@ var React = require('React');
 import AppContainer from './containers/AppContainer';
 
 var { Provider } = require('react-redux');
-var configureStore = require('./store/configureStore');
+import configureStore from './store/configureStore';
 
 function setup(): ReactClass<{}>{
 
