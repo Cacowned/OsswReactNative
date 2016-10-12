@@ -8,7 +8,7 @@ import reducers from '../reducers';
 var { AsyncStorage } = require('react-native');
 
 import { getDevice, getWatchSets } from '../store/storageManager';
-import { rehydrateDevice} from '../actions';
+import { rehydrateDevice, rehydrateWatchSets } from '../actions';
 
 import BleManager from '../Ble/BleManager';
 
@@ -33,6 +33,7 @@ function configureStore(onComplete: ?()=>void) {
   var watchsets = getWatchSets().then((data)=>{
     if(data && data.length > 0){
       console.log('restoring from storage:', data);
+      store.dispatch(rehydrateWatchSets(data));
     }
   });
 

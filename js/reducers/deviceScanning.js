@@ -5,7 +5,7 @@ import {
   STOP_SCANNING, START_SCANNING,
   SELECT_DEVICE, DEVICE_FOUND,
   REHYDRATE_DEVICE,
-} from '../actions/deviceScanning'
+} from '../actions/deviceScanning';
 
 import type {Action} from '../actions/types';
 
@@ -19,7 +19,7 @@ export type Device = {
 }
 
 type State = {
-  device: Device;
+  device: ?Device;
   isScanning: boolean;
 }
 
@@ -97,7 +97,8 @@ export default combineReducers({
   activeDevice,
 });
 
-export const getDevice = (state: Object, address: String) => state.byAddress[address];
+export const getDevice = (state: Object, address: String) =>
+  state.byAddress[address];
 
 export const getFoundDevices = (state : Object) =>
   state.foundDevices.map(address => getDevice(state, address));

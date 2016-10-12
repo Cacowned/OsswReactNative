@@ -68,10 +68,10 @@ export const startScanning = () : ThunkAction => {
   };
 };
 
-export const deviceFound = (device: Device): Action => (({
+export const deviceFound = (device: Device): Action => ({
   type: DEVICE_FOUND,
   device,
-} : any));
+} : any);
 
 // export const deviceFound = (device: Device) => (dispatch, getState) => {
 //   dispatch(_deviceFound(device));

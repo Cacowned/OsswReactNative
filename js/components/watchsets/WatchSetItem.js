@@ -10,7 +10,7 @@ const WatchSetItem = (props : Object) => {
     <TouchableHighlight
       onPress={()=>props.onWatchSetSelected()}
       underlayColor='transparent'>
-        <Text>watchset</Text>
+        <Text>{props.watchset.name}</Text>
     </TouchableHighlight>
   );
 };

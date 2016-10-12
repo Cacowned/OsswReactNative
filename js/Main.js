@@ -13,12 +13,6 @@ import DevicesContainer from './containers/DevicesContainer';
 import WatchSetsContainer from './containers/WatchSetsContainer';
 
 import type { OptionItem } from './options/types';
-import type { WatchSet } from './reducers/watchsets';
-
-import { getDevice, saveWatchset } from './store/storageManager';
-
-var FilePickerManager = require('NativeModules').FilePickerManager;
-var FSManager = require('NativeModules').FSManager;
 
 const SplitViewWindows = require('SplitViewWindows');
 const DRAWER_WIDTH_LEFT = 280;
@@ -84,20 +78,7 @@ class Main extends React.Component {
         return {
           title: "Import",
           action: ()=>{
-            FilePickerManager.showFilePicker({
-              viewMode: "list",
-              fileTypeFilter: ".json",
-            })
-              .then((result: string)=>{
-                FSManager.readFile(result)
-                  .then((result) => {
-                    debugger;
-                    var watchSet : WatchSet = JSON.parse(result);
-                    console.log(watchSet);
-                    saveWatchset(watchSet);
-                  })
-              }
-              );
+            this.props.onImportWatchSet();
           },
         };
           // return "Import";
@@ -158,6 +139,7 @@ Main.propTypes = {
   isScanning: PropTypes.bool.isRequired,
   startScanning: PropTypes.func.isRequired,
   stopScanning: PropTypes.func.isRequired,
+  onImportWatchSet: PropTypes.func.isRequired,
 }
 
 const styles = StyleSheet.create({
