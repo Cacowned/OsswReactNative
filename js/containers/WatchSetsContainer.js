@@ -9,10 +9,6 @@ import { selectWatchset } from '../actions/watchsets';
 
 class WatchSetsContainer extends React.Component {
 
-  watchsetselected(watchset){
-
-  }
-
   render() {
     return (
       <WatchSetsList

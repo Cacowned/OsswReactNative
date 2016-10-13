@@ -31,10 +31,18 @@ export type WatchSet = {
   data: WatchSetData;
 }
 
-const selectedWatchSet = (state = null, action) =>{
+type WatchSetItem = {
+  watchset: WatchSet;
+  isSelected: boolean;
+}
+
+const watchsets = (state, action) =>{
   switch(action.type){
     case SELECT_WATCHSET:
-      return action.watchset;
+    return {
+      ...state,
+      isSelected: !state.isSelected,
+    }
     default:
       return state;
   }
@@ -56,6 +64,13 @@ const byName = (state={}, action) =>{
           [action.watchset.name]: action.watchset,
         }
       default:
+        const {watchsetname} = action;
+        if(watchsetname){
+          return {
+            ...state,
+            [watchsetname]: watchsets(state[watchsetname], action),
+          };
+        }
         return state;
     }
 }

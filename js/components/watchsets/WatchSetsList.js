@@ -31,9 +31,11 @@ class WatchSetsList extends React.Component {
         enableEmptySections={true}
         dataSource={this.state.dataSource}
         renderRow={
-          (data) => <WatchSetItem
+          (data, sectionId, rowId, highlightRow) => <WatchSetItem
                       watchset={data}
-                      onWatchSetSelected={()=>this.props.onWatchSetSelected(data)}/>
+                      onWatchSetSelected={()=>{
+                        this.props.onWatchSetSelected(data);
+                      }}/>
         }/>
     );
   }

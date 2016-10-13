@@ -12,10 +12,16 @@ export const SELECT_WATCHSET = 'SELECT_WATCHSET';
 export const IMPORT_WATCHSET = 'IMPORT_WATCHSET';
 export const REHYDRATE_WATCHSETS = 'REHYDRATE_WATCHSETS';
 
-export const selectWatchset = (watchset: WatchSet) => ({
+const selectWatchSetUnsafe = (watchsetname) : Action => ({
   type: SELECT_WATCHSET,
-  watchset,
+  watchsetname,
 }:any);
+
+export const selectWatchset = (watchset: WatchSet):ThunkAction => (dispatch,getState)=> {
+  if(getState().watchsets.byName[watchset.name]){
+    dispatch(selectWatchSetUnsafe(watchset.name));
+  }
+};
 
 export const rehydrateWatchSets = (watchsets: WatchSet[]) => ({
   type: REHYDRATE_WATCHSETS,
