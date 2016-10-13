@@ -24,6 +24,6 @@
 'use strict';
 
 const {AppRegistry}=require('react-native');
-const setup = require('./js/setup');
+import Root from './js/containers/Root'
 
-AppRegistry.registerComponent('osswReactNative', setup);
+AppRegistry.registerComponent('osswReactNative', ()=>Root);

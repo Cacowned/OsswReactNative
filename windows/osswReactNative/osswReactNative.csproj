@@ -219,6 +219,10 @@
       <Project>{93a98120-470f-471c-a58f-29cb18576e80}</Project>
       <Name>FSManager</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ReduxDevTools\ReduxDevTools.csproj">
+      <Project>{0d0db09e-de14-41e8-ab75-333224e82fce}</Project>
+      <Name>ReduxDevTools</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'ReleaseBundle' or '$(Configuration)' == 'DebugBundle'">
     <Content Include="ReactAssets\**\*">

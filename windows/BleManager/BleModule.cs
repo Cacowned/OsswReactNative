@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Windows.ApplicationModel.Core;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.Advertisement;
@@ -136,9 +137,9 @@ namespace BleManager
         [ReactMethod]
         public void read(string deviceAddress, string serviceUUID, string characteristicUUID, IPromise promise)
         {
-            RunOnDispatcher(async () =>
+            if (connectedDevice != null && connectedDevice.BluetoothAddress == Utils.ToDeviceAddress(deviceAddress))
             {
-                if (connectedDevice != null && connectedDevice.BluetoothAddress == Utils.ToDeviceAddress(deviceAddress))
+                RunOnDispatcher(async () =>
                 {
                     var service = connectedDevice.GetGattService(new Guid(serviceUUID));
                     if (service != null)
@@ -152,26 +153,62 @@ namespace BleManager
                             DataReader.FromBuffer(result.Value).ReadBytes(data);
 
                             promise.Resolve(new JObject
-                            {
-                                // Hack to prevent byte array to be serialized as base64 string
-                                { "value",new JArray(data.Select(b=>(short)b).ToArray())}
-                            });
+                                {
+                                    // Hack to prevent byte array to be serialized as base64 string
+                                    { "value",new JArray(data.Select(b=>(short)b).ToArray())}
+                                });
                         }
                         else
                         {
                             promise.Reject("READ_FAILED", "Could not read characteristic");
                         }
                     }
-                }
-                else
-                {
-                    promise.Reject("PERIPHERAL_NOT_FOUND", "Peripheral not found");
-                }
-            });
+                });
+            }
+            else
+            {
+                promise.Reject("PERIPHERAL_NOT_FOUND", "Peripheral not found");
+            }
         }
 
         [ReactMethod]
-        public void connect(string deviceAdress, IPromise promise)
+        public void write(string deviceAddress, string serviceUUID, string characteristicUUID, string data, IPromise promise)
+        {
+            if (connectedDevice != null && connectedDevice.BluetoothAddress == Utils.ToDeviceAddress(deviceAddress))
+            {
+                RunOnDispatcher(async () =>
+                {
+                    var service = connectedDevice.GetGattService(new Guid(serviceUUID));
+                    if (service != null)
+                    {
+                        var characteristic = service.GetCharacteristics(new Guid(characteristicUUID)).FirstOrDefault();
+
+                        var bytes = Convert.FromBase64String(data);
+                        var result = await characteristic.WriteValueAsync(bytes.ToBuffer());
+                        
+                        promise.Resolve(null);                        
+//                        if (result.Status == GattCommunicationStatus.Success)
+//                        {
+//                            byte[] data = new byte[result.Value.Length];
+//                            DataReader.FromBuffer(result.Value).ReadBytes(data);
+//
+//                            promise.Resolve(new JObject
+//                                {
+//                                    // Hack to prevent byte array to be serialized as base64 string
+//                                    { "value",new JArray(data.Select(b=>(short)b).ToArray())}
+//                                });
+//                        }
+//                        else
+//                        {
+//                            promise.Reject("WRITE_FAILED", "Could not write characteristic");
+//                        }
+                    }
+                });
+            }
+        }
+
+        [ReactMethod]
+        public void connect(string deviceAddress, IPromise promise)
         {
             ReleaseConnectedDevice();
 
@@ -179,7 +216,7 @@ namespace BleManager
             {
                 try
                 {
-                    ulong address = Utils.ToDeviceAddress(deviceAdress);
+                    ulong address = Utils.ToDeviceAddress(deviceAddress);
 
                     connectedDevice = await BluetoothLEDevice.FromBluetoothAddressAsync(address);
                     connectedDevice.ConnectionStatusChanged += ConnectedDeviceOnConnectionStatusChanged;

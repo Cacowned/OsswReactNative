@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using BleManager;
 using FilePickerManager;
 using FSManager;
+using ReduxDevTools;
 
 namespace osswReactNative
 {
     class MainPage : ReactPage
-    {
+    {       
         public override string MainComponentName => "osswReactNative";
-
 #if BUNDLE
         public override string JavaScriptBundleFile
         {
@@ -28,9 +28,9 @@ namespace osswReactNative
             new BleManagerPackage(),
             new FilePickerPackage(),
             new FileSystemPackage(),
+            new DevToolsPackage(),
         };
 
         public override bool UseDeveloperSupport => true;
     }
-
 }

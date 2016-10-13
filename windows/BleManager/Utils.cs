@@ -1,5 +1,7 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Text.RegularExpressions;
+using Windows.Storage.Streams;
 
 namespace BleManager
 {
@@ -28,6 +30,28 @@ namespace BleManager
             catch
             {
                 return ulong.MinValue;
+            }
+        }
+
+        public static IBuffer ToBuffer(this byte[] value)
+        {
+            return ToBuffer(value, value.Length);
+        }
+
+        public static IBuffer ToBuffer(this byte[] value, int length)
+        {
+            if (value == null || value.Length == 0)
+            {
+                throw new ArgumentException();
+            }
+
+            var temp = new byte[length];
+            Array.Copy(value, 0, temp, 0, length);
+            using (DataWriter writer = new DataWriter())
+            {
+                writer.WriteBytes(temp);
+                var buffer = writer.DetachBuffer();
+                return buffer;
             }
         }
     }
