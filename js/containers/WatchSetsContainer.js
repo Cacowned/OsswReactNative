@@ -5,10 +5,18 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import WatchSetsList from '../components/watchsets/WatchSetsList';
 import { getAllWatchSets } from '../reducers/watchsets';
-import { selectWatchset } from '../actions/watchsets';
+import { selectWatchset, createOptionsMenu, importWatchSet } from '../actions';
 
 class WatchSetsContainer extends React.Component {
 
+  componentDidMount(){
+    this.props.createOptionsMenu([{
+      title: "Import",
+      action: ()=>{
+        this.props.onImportWatchSet();
+      }
+    }]);
+  }
   render() {
     return (
       <WatchSetsList
@@ -28,6 +36,12 @@ const mapDispatchToProps = dispatch => (
   {
     onWatchSetSelected: (watchset) => {
       dispatch(selectWatchset(watchset));
+    },
+    createOptionsMenu: (options)=>{
+      dispatch(createOptionsMenu(options));
+    },
+    onImportWatchSet: ()=>{
+      dispatch(importWatchSet());
     },
   }
 );

@@ -35,7 +35,6 @@ class Main extends React.Component {
               onPress={() => this.splitView.openPane()}
               title = {this.getTitle()}
               style = {styles.header}
-              optionsMenu={this.getOptionsMenu()}
             />
             <View style={styles.content}>
               {this.renderContent()}
@@ -64,41 +63,13 @@ class Main extends React.Component {
       return "Unknown";
     }
 
-    getOptionsMenu(): OptionItem{
-      switch(this.props.activeTab){
-        case 'watches':
-          return {
-            title:"Scan",
-            action: ()=>{
-              this.onToggleScan();
-            }
-          }
-          // return "Scan";
-        case "watchfaces":
-        return {
-          title: "Import",
-          action: ()=>{
-            this.props.onImportWatchSet();
-          },
-        };
-          // return "Import";
-      }
-      return {
-        title: "",
-        action: ()=>{
-
-        },
-      };
-      // return '';
-    }
-
-    onToggleScan() {
-      if(this.props.isScanning){
-        this.props.stopScanning();
-      }else{
-        this.props.startScanning();
-      }
-    }
+    // onToggleScan() {
+    //   if(this.props.isScanning){
+    //     this.props.stopScanning();
+    //   }else{
+    //     this.props.startScanning();
+    //   }
+    // }
 
     _closePane() {
       this.splitView.closePane();
@@ -136,10 +107,6 @@ class Main extends React.Component {
 Main.propTypes = {
   activeDevice: PropTypes.object,
   activeTab: PropTypes.string.isRequired,
-  isScanning: PropTypes.bool.isRequired,
-  startScanning: PropTypes.func.isRequired,
-  stopScanning: PropTypes.func.isRequired,
-  onImportWatchSet: PropTypes.func.isRequired,
 }
 
 const styles = StyleSheet.create({

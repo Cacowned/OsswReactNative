@@ -6,11 +6,13 @@ import { combineReducers } from 'redux';
 import devices, * as fromDevices from './deviceScanning';
 import navigation from './navigation';
 import watchsets, * as fromWatchSets from './watchsets';
+import optionsMenu from './optionsMenu';
 
 export default combineReducers({
   navigation,
   devices,
   watchsets,
+  optionsMenu,
   });
 
 // module.exports = combineReducers({

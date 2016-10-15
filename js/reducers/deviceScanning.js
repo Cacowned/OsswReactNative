@@ -5,7 +5,7 @@ import {
   STOP_SCANNING, START_SCANNING,
   SELECT_DEVICE, DEVICE_FOUND,
   REHYDRATE_DEVICE,
-} from '../actions/deviceScanning';
+} from '../actions';
 
 import type {Action} from '../actions/types';
 

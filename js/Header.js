@@ -10,9 +10,10 @@ import {
   TouchableHighlight,
   View
 } from 'react-native';
+import OptionsMenu from './components/menu/OptionsMenu';
 
 class Header extends React.Component{
-  constructor(props){
+  constructor(props: Object){
     super(props);
   }
 
@@ -21,20 +22,15 @@ class Header extends React.Component{
       <View style ={[styles.header, this.props.style]}>
         <TouchableHighlight underlayColor='transparent'
           onPress={this.props.onPress}
-          style={[styles.button]}>
+          style={styles.button}>
           <Image
             source={require('./Images/hamburger.png')}
-            style={[styles.menu]}/>
+            style={styles.image}/>
         </TouchableHighlight>
-        <View style={[styles.titleContainer]}>
-          <Text style={[styles.title]}>{this.props.title}</Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>{this.props.title}</Text>
         </View>
-        <TouchableHighlight
-          underlayColor='transparent'
-          onPress={this.props.optionsMenu.action}
-          style={[styles.button, styles.options]}>
-            <Text style={styles.optionItem}>{this.props.optionsMenu.title}</Text>
-          </TouchableHighlight>
+        <OptionsMenu />
       </View>
     );
   }
@@ -44,7 +40,6 @@ Header.propTypes = {
   title: PropTypes.string.isRequired,
   onPress: PropTypes.func.isRequired,
   style: PropTypes.any,
-  optionsMenu: PropTypes.object.isRequired,
 }
 
 const styles = StyleSheet.create({
@@ -56,14 +51,8 @@ const styles = StyleSheet.create({
   button:{
     padding: 8,
   },
-  menu:{
+  image:{
     flex: 1,
-  },
-  options:{
-    justifyContent: 'center',
-  },
-  optionItem:{
-    color: 'white',
   },
   titleContainer:{
     alignItems: 'flex-start',

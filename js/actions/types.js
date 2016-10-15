@@ -27,6 +27,7 @@
 export type Action =
     { type: 'SWITCH_TAB', tab: 'watchfaces' | 'exts' | 'apps' | 'settings' | 'watches' | 'utils' | 'exit' }
   | { type: 'WATCH_FOUND' }
+  | { type: 'CREATE_OPTIONS_MENU', options: Object[]}
   ;
 
   export type Dispatch = (action: Action | ThunkAction | PromiseAction | Array<Action> ) => any;

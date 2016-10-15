@@ -4,8 +4,14 @@
 
 import React, {PropTypes} from 'react';
 import BleManager from '../Ble/BleManager';
-import {getFoundDevices} from '../reducers/deviceScanning';
-import { deviceFound, stopScanning, selectDevice } from '../actions';
+import { getFoundDevices } from '../reducers/deviceScanning';
+import {
+  deviceFound,
+  startScanning,
+  stopScanning,
+  selectDevice,
+  createOptionsMenu,
+} from '../actions';
 import type { Device } from '../reducers/deviceScanning';
 import { connect } from 'react-redux';
 import DevicesList from '../components/devices/DevicesList';
@@ -27,6 +33,19 @@ class DevicesContainer extends React.Component {
     this.props.stopScanning();
   }
 
+  componentDidMount(){
+    this.props.createOptionsMenu([{
+      title: "Scan",
+      action: ()=>{
+        if(this.props.isScanning){
+          this.props.stopScanning();
+        }else{
+          this.props.startScanning();
+        }
+      }
+    }]);
+  }
+
   render(){
     return (
       <DevicesList
@@ -38,6 +57,7 @@ class DevicesContainer extends React.Component {
 
 const mapStateToProps = state => ({
   devices: getFoundDevices(state.devices),
+  isScanning: state.devices.isScanning,
 });
 
 const mapDispatchToProps = dispatch =>{
@@ -45,11 +65,17 @@ const mapDispatchToProps = dispatch =>{
     onDeviceFound: (device) => {
       dispatch(deviceFound(device));
     },
+    startScanning: () =>{
+      dispatch(startScanning());
+    },
     stopScanning: () =>{
       dispatch(stopScanning());
     },
     deviceSelected: (device) => {
       dispatch(selectDevice(device));
+    },
+    createOptionsMenu: (options)=>{
+      dispatch(createOptionsMenu(options));
     },
   }
 }
