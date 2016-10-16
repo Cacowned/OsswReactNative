@@ -19,7 +19,7 @@ class Header extends React.Component{
     super(props);
   }
 
-  setOptionsMenu(options){
+  setOptionsMenu(options: Object[]){
     this.optionsMenu.setOptionsMenu(options);
   }
 

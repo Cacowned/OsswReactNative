@@ -4,7 +4,6 @@
 import React, { PropTypes } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-var WatchesView = require('./Views/Watches');
 import Header from './Header';
 var Menu = require('./Menu');
 var Footer = require('./Footer');
@@ -26,7 +25,7 @@ class Main extends React.Component {
     this.setOptionsMenu = this.setOptionsMenu.bind(this);
   }
 
-  setOptionsMenu(optionsMenu){
+  setOptionsMenu(optionsMenu: Object[]){
     this.header.setOptionsMenu(optionsMenu)
   }
 

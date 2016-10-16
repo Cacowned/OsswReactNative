@@ -8,12 +8,12 @@ import OptionsMenuItem from './OptionsMenuItem';
 class OptionsMenu extends React.Component {
   constructor(props: Object) {
     super(props);
-    this.state ={
+    this.state = {
       options: [],
-    }
+    };
   }
 
-  setOptionsMenu(opts){
+  setOptionsMenu(opts:Object[]){
     this.setState({
       options: opts
     });

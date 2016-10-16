@@ -7,7 +7,6 @@ import WatchSetsList from '../components/watchsets/WatchSetsList';
 import { getAllWatchSets } from '../reducers/watchsets';
 import {
   selectWatchset,
-  createOptionsMenu,
   importWatchSet,
   deleteSelectedWatchSet,
 } from '../actions';
