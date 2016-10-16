@@ -5,7 +5,12 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import WatchSetsList from '../components/watchsets/WatchSetsList';
 import { getAllWatchSets } from '../reducers/watchsets';
-import { selectWatchset, createOptionsMenu, importWatchSet } from '../actions';
+import {
+  selectWatchset,
+  createOptionsMenu,
+  importWatchSet,
+  deleteSelectedWatchSet,
+} from '../actions';
 
 class WatchSetsContainer extends React.Component {
 
@@ -15,6 +20,17 @@ class WatchSetsContainer extends React.Component {
       action: ()=>{
         this.props.onImportWatchSet();
       }
+    },{
+      title: "Delete",
+      action: ()=>{
+        this.props.onDeleteSelectedWatchSet();
+      }
+    },{
+      title: "Preview",
+      action: () => {}
+    },{
+      title:"Upload",
+      action: () => {}
     }]);
   }
   render() {
@@ -43,6 +59,9 @@ const mapDispatchToProps = dispatch => (
     onImportWatchSet: ()=>{
       dispatch(importWatchSet());
     },
+    onDeleteSelectedWatchSet: () => {
+      dispatch(deleteSelectedWatchSet());
+    }
   }
 );
 

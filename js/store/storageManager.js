@@ -27,8 +27,12 @@ export function getDevice(){
   });
 }
 
-export function saveWatchset(watchset : WatchSet){
+export function saveWatchSet(watchset : WatchSet){
   return AsyncStorage.setItem(storageWatchSetKey + ":" + watchset.name, JSON.stringify(watchset));
+}
+
+export function removeWatchSet(watchset : WatchSet){
+  return AsyncStorage.removeItem(storageWatchSetKey + ":" + watchset.name);
 }
 
 var fn = function getWatchSet(key: string){

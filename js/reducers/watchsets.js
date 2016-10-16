@@ -39,10 +39,10 @@ type WatchSetItem = {
 const watchsets = (state, action) =>{
   switch(action.type){
     case SELECT_WATCHSET:
-    return {
-      ...state,
-      isSelected: !state.isSelected,
-    }
+      return {
+        ...state,
+        isSelected: !state.isSelected,
+      }
     default:
       return state;
   }

@@ -33,9 +33,9 @@ OptionsMenu.propTypes = {
 
 const styles = StyleSheet.create({
   container:{
-    justifyContent: 'flex-start',
+    justifyContent: 'flex-end',
     flex: 1,
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
   },
 });

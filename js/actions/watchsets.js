@@ -3,7 +3,15 @@
 var FilePickerManager = require('NativeModules').FilePickerManager;
 var FSManager = require('NativeModules').FSManager;
 
-import { saveWatchset } from '../store/storageManager';
+import {
+  saveWatchSet,
+  removeWatchSet,
+  getWatchSets,
+} from '../store/storageManager';
+
+import {
+  getAllWatchSets,
+} from '../reducers/watchsets'
 
 import type { Action, ThunkAction } from './types';
 import type { WatchSet } from '../reducers/watchsets';
@@ -28,6 +36,21 @@ export const rehydrateWatchSets = (watchsets: WatchSet[]) => ({
   watchsets,
 }:any);
 
+export const deleteSelectedWatchSet = () : ThunkAction =>
+  (dispatch, getState) =>{
+    var promises = []
+    var toBeRemoved = getAllWatchSets(getState().watchsets).filter((item)=>item.isSelected);
+    toBeRemoved.forEach((watchset) => {
+      promises.push(removeWatchSet(watchset));
+    });
+
+    Promise.all(promises).then(()=>{
+      return getWatchSets();
+    }).then((data)=>{
+      dispatch(rehydrateWatchSets(data))
+    });
+};
+
 export const importWatchSet = () :ThunkAction => {
   return (dispatch, getState) => {
 
@@ -40,7 +63,7 @@ export const importWatchSet = () :ThunkAction => {
           .then((result) => {
             var watchset : WatchSet = JSON.parse(result);
 
-            saveWatchset(watchset);
+            saveWatchSet(watchset);
 
             dispatch(({
               type: IMPORT_WATCHSET,
