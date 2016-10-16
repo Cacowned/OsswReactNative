@@ -10,7 +10,6 @@ import {
   startScanning,
   stopScanning,
   selectDevice,
-  createOptionsMenu,
 } from '../actions';
 import type { Device } from '../reducers/deviceScanning';
 import { connect } from 'react-redux';
@@ -34,7 +33,7 @@ class DevicesContainer extends React.Component {
   }
 
   componentDidMount(){
-    this.props.createOptionsMenu([{
+    this.props.setOptionsMenu([{
       title: "Scan",
       action: ()=>{
         if(this.props.isScanning){
@@ -73,9 +72,6 @@ const mapDispatchToProps = dispatch =>{
     },
     deviceSelected: (device) => {
       dispatch(selectDevice(device));
-    },
-    createOptionsMenu: (options)=>{
-      dispatch(createOptionsMenu(options));
     },
   }
 }

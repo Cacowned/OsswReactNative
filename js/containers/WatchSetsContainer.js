@@ -15,8 +15,6 @@ import {
 class WatchSetsContainer extends React.Component {
 
   createOptionsMenu(watchsets){
-
-
     var optionsMenu = [{
       title: "Import",
       action: ()=>{
@@ -66,8 +64,6 @@ class WatchSetsContainer extends React.Component {
   }
 }
 
-
-
 const mapStateToProps = (state) => (
   {
     watchsets: getAllWatchSets(state.watchsets),
@@ -78,7 +74,7 @@ const mapDispatchToProps = dispatch => (
   {
     onWatchSetSelected: (watchset) => {
       dispatch(selectWatchset(watchset));
-    },  
+    },
     onImportWatchSet: ()=>{
       dispatch(importWatchSet());
     },

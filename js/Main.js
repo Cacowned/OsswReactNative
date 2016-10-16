@@ -86,7 +86,7 @@ class Main extends React.Component {
         case 'exts':
           return (<Text>Extensions</Text>);
         case 'watches':
-          return <DevicesContainer/>;
+          return <DevicesContainer setOptionsMenu={this.setOptionsMenu}/>;
         case 'settings':
           return (<Text>Settings</Text>);
       }
