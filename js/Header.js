@@ -19,10 +19,6 @@ class Header extends React.Component{
     super(props);
   }
 
-  setOptionsMenu(options: Object[]){
-    this.optionsMenu.setOptionsMenu(options);
-  }
-
   render() {
     return(
       <View style ={[styles.header, this.props.style]}>
@@ -36,7 +32,7 @@ class Header extends React.Component{
         <View style={styles.titleContainer}>
           <Text style={styles.title}>{this.props.title}</Text>
         </View>
-        <OptionsMenu ref={(ref)=>this.optionsMenu = ref}/>
+        <OptionsMenu />
       </View>
     );
   }

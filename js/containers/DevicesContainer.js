@@ -33,7 +33,7 @@ class DevicesContainer extends React.Component {
   }
 
   createOptionsMenu(props){
-    props.setOptionsMenu([{
+    this.context.setOptions([{
       title: props.isScanning ? 'Stop' : 'Scan',
       action: this.toggleScanning.bind(this),
     }]);
@@ -47,6 +47,10 @@ class DevicesContainer extends React.Component {
 
   componentDidMount(){
     this.createOptionsMenu(this.props);
+  }
+
+  componentWillUnmount(){
+    this.context.setOptions([]);
   }
 
   toggleScanning(){
@@ -65,6 +69,10 @@ class DevicesContainer extends React.Component {
     );
   }
 }
+
+DevicesContainer.contextTypes = {
+    setOptions: React.PropTypes.func,
+};
 
 const mapStateToProps = state => ({
   devices: getFoundDevices(state.devices),

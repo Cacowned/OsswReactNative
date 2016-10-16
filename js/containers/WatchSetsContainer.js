@@ -41,11 +41,15 @@ class WatchSetsContainer extends React.Component {
       });
     }
 
-    this.props.setOptionsMenu(optionsMenu);
+    this.context.setOptions(optionsMenu);
   }
 
   componentDidMount(){
     this.createOptionsMenu(this.props.watchsets);
+  }
+
+  componentWillUnmount(){
+    this.context.setOptions([]);
   }
 
   componentWillReceiveProps(nextProps: Object){
@@ -62,6 +66,10 @@ class WatchSetsContainer extends React.Component {
     );
   }
 }
+
+WatchSetsContainer.contextTypes = {
+    setOptions: React.PropTypes.func,
+};
 
 const mapStateToProps = (state) => (
   {

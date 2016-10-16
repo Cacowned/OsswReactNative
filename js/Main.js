@@ -10,23 +10,17 @@ var Footer = require('./Footer');
 
 import DevicesContainer from './containers/DevicesContainer';
 import WatchSetsContainer from './containers/WatchSetsContainer';
+import OptionsMenuContext from './containers/OptionsMenuContext';
 
 import type { OptionItem } from './options/types';
-
 const SplitViewWindows = require('SplitViewWindows');
 const DRAWER_WIDTH_LEFT = 280;
 
 class Main extends React.Component {
-  header:Header;
   splitView:SplitViewWindows;
 
   constructor(props: Object) {
     super(props);
-    this.setOptionsMenu = this.setOptionsMenu.bind(this);
-  }
-
-  setOptionsMenu(optionsMenu: Object[]){
-    this.header.setOptionsMenu(optionsMenu)
   }
 
   render(): ? ReactElement<any> {
@@ -37,15 +31,16 @@ class Main extends React.Component {
           ref = {(splitView) => {this.splitView = splitView;}}
           renderPaneView = {this._renderPaneContent.bind(this)} >
           <View style={styles.container}>
-            <Header
-              ref={(header) => this.header = header}
-              onPress={() => this.splitView.openPane()}
-              title = {this.getTitle()}
-              style = {styles.header}
-            />
-            <View style={styles.content}>
-              {this.renderContent()}
-            </View>
+            <OptionsMenuContext>
+              <Header
+                onPress={() => this.splitView.openPane()}
+                title = {this.getTitle()}
+                style = {styles.header}
+              />
+              <View style={styles.content}>
+                {this.renderContent()}
+              </View>
+            </OptionsMenuContext>
             <Footer style={styles.footer}/>
           </View>
         </SplitViewWindows>
@@ -77,7 +72,7 @@ class Main extends React.Component {
     renderContent(){
       switch(this.props.activeTab){
         case 'watchfaces':
-          return (<WatchSetsContainer setOptionsMenu={this.setOptionsMenu}/>);
+          return (<WatchSetsContainer />);
         case 'apps':
           return (<Text>Applications</Text>);
         case 'utils':
@@ -85,7 +80,7 @@ class Main extends React.Component {
         case 'exts':
           return (<Text>Extensions</Text>);
         case 'watches':
-          return <DevicesContainer setOptionsMenu={this.setOptionsMenu}/>;
+          return <DevicesContainer/>;
         case 'settings':
           return (<Text>Settings</Text>);
       }

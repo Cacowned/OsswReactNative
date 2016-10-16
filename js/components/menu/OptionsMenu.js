@@ -13,6 +13,13 @@ class OptionsMenu extends React.Component {
     };
   }
 
+  componentDidMount(){
+    this.context.registerOptionsMenu(this);
+  }
+  componentWillUnmount(){
+    this.context.unregisterOptionsMenu();
+  }
+
   setOptionsMenu(opts:Object[]){
     this.setState({
       options: opts
@@ -34,6 +41,11 @@ class OptionsMenu extends React.Component {
     );
   }
 }
+
+OptionsMenu.contextTypes={
+    registerOptionsMenu: React.PropTypes.func,
+    unregisterOptionsMenu: React.PropTypes.func,
+};
 
 const styles = StyleSheet.create({
   container:{
