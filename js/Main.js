@@ -18,9 +18,16 @@ const SplitViewWindows = require('SplitViewWindows');
 const DRAWER_WIDTH_LEFT = 280;
 
 class Main extends React.Component {
+  header:Header;
+  splitView:SplitViewWindows;
 
   constructor(props: Object) {
     super(props);
+    this.setOptionsMenu = this.setOptionsMenu.bind(this);
+  }
+
+  setOptionsMenu(optionsMenu){
+    this.header.setOptionsMenu(optionsMenu)
   }
 
   render(): ? ReactElement<any> {
@@ -32,6 +39,7 @@ class Main extends React.Component {
           renderPaneView = {this._renderPaneContent.bind(this)} >
           <View style={styles.container}>
             <Header
+              ref={(header) => this.header = header}
               onPress={() => this.splitView.openPane()}
               title = {this.getTitle()}
               style = {styles.header}
@@ -63,14 +71,6 @@ class Main extends React.Component {
       return "Unknown";
     }
 
-    // onToggleScan() {
-    //   if(this.props.isScanning){
-    //     this.props.stopScanning();
-    //   }else{
-    //     this.props.startScanning();
-    //   }
-    // }
-
     _closePane() {
       this.splitView.closePane();
     }
@@ -78,7 +78,7 @@ class Main extends React.Component {
     renderContent(){
       switch(this.props.activeTab){
         case 'watchfaces':
-          return (<WatchSetsContainer/>);
+          return (<WatchSetsContainer setOptionsMenu={this.setOptionsMenu}/>);
         case 'apps':
           return (<Text>Applications</Text>);
         case 'utils':
@@ -98,7 +98,6 @@ class Main extends React.Component {
   _renderPaneContent() {
     return (
       <Menu
-        style = {styles.paneContentWrapper}
         closePane={this._closePane.bind(this)}/>
     );
   }

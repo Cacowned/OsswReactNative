@@ -4,15 +4,23 @@
 import React, { PropTypes } from 'react';
 import { View, StyleSheet} from 'react-native';
 import OptionsMenuItem from './OptionsMenuItem';
-import { connect } from 'react-redux';
 
 class OptionsMenu extends React.Component {
   constructor(props: Object) {
     super(props);
+    this.state ={
+      options: [],
+    }
+  }
+
+  setOptionsMenu(opts){
+    this.setState({
+      options: opts
+    });
   }
 
   render (){
-    var children = this.props.menuOptions.reduce((obj, item)=>{
+    var children = this.state.options.reduce((obj, item)=>{
       obj.push((
         <OptionsMenuItem menuItem={item} key={item.title}/>
       ));
@@ -27,10 +35,6 @@ class OptionsMenu extends React.Component {
   }
 }
 
-OptionsMenu.propTypes = {
-  menuOptions: PropTypes.arrayOf(PropTypes.object).isRequired,
-}
-
 const styles = StyleSheet.create({
   container:{
     justifyContent: 'flex-end',
@@ -40,10 +44,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (state) =>(
-  {
-    menuOptions: state.optionsMenu.optionsMenu,
-  }
-);
-
-export default connect(mapStateToProps)(OptionsMenu);
+export default OptionsMenu;

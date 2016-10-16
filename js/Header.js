@@ -13,8 +13,14 @@ import {
 import OptionsMenu from './components/menu/OptionsMenu';
 
 class Header extends React.Component{
+  optionsMenu : OptionsMenu;
+
   constructor(props: Object){
     super(props);
+  }
+
+  setOptionsMenu(options){
+    this.optionsMenu.setOptionsMenu(options);
   }
 
   render() {
@@ -30,7 +36,7 @@ class Header extends React.Component{
         <View style={styles.titleContainer}>
           <Text style={styles.title}>{this.props.title}</Text>
         </View>
-        <OptionsMenu />
+        <OptionsMenu ref={(ref)=>this.optionsMenu = ref}/>
       </View>
     );
   }

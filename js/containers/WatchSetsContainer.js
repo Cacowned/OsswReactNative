@@ -14,25 +14,49 @@ import {
 
 class WatchSetsContainer extends React.Component {
 
-  componentDidMount(){
-    this.props.createOptionsMenu([{
+  createOptionsMenu(watchsets){
+
+
+    var optionsMenu = [{
       title: "Import",
       action: ()=>{
         this.props.onImportWatchSet();
       }
-    },{
-      title: "Delete",
-      action: ()=>{
-        this.props.onDeleteSelectedWatchSet();
-      }
-    },{
-      title: "Preview",
-      action: () => {}
-    },{
-      title:"Upload",
-      action: () => {}
-    }]);
+    }];
+    var selectedCount = watchsets.filter((item)=>item.isSelected).length;
+    if(selectedCount > 0){
+      optionsMenu.push({
+        title: "Delete",
+        action: ()=>{
+          this.props.onDeleteSelectedWatchSet();
+        }
+      });
+    }
+
+    if(selectedCount == 1){
+      optionsMenu.push({
+        title: "Preview",
+        action: () => {}
+      });
+      optionsMenu.push({
+        title:"Upload",
+        action: () => {}
+      });
+    }
+
+    this.props.setOptionsMenu(optionsMenu);
   }
+
+  componentDidMount(){
+    this.createOptionsMenu(this.props.watchsets);
+  }
+
+  componentWillReceiveProps(nextProps: Object){
+    if(nextProps.watchsets !== this.props.watchsets){
+      this.createOptionsMenu(nextProps.watchsets);
+    }
+  }
+
   render() {
     return (
       <WatchSetsList
@@ -41,6 +65,8 @@ class WatchSetsContainer extends React.Component {
     );
   }
 }
+
+
 
 const mapStateToProps = (state) => (
   {
@@ -52,10 +78,7 @@ const mapDispatchToProps = dispatch => (
   {
     onWatchSetSelected: (watchset) => {
       dispatch(selectWatchset(watchset));
-    },
-    createOptionsMenu: (options)=>{
-      dispatch(createOptionsMenu(options));
-    },
+    },  
     onImportWatchSet: ()=>{
       dispatch(importWatchSet());
     },
