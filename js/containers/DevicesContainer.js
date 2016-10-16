@@ -32,17 +32,29 @@ class DevicesContainer extends React.Component {
     this.props.stopScanning();
   }
 
-  componentDidMount(){
-    this.props.setOptionsMenu([{
-      title: "Scan",
-      action: ()=>{
-        if(this.props.isScanning){
-          this.props.stopScanning();
-        }else{
-          this.props.startScanning();
-        }
-      }
+  createOptionsMenu(props){
+    props.setOptionsMenu([{
+      title: props.isScanning ? 'Stop' : 'Scan',
+      action: this.toggleScanning.bind(this),
     }]);
+  }
+
+  componentWillReceiveProps(nextProps){
+    if(nextProps.isScanning !== this.props.isScanning) {
+      this.createOptionsMenu(nextProps);
+    }
+  }
+
+  componentDidMount(){
+    this.createOptionsMenu(this.props);
+  }
+
+  toggleScanning(){
+    if(this.props.isScanning){
+      this.props.stopScanning();
+    }else{
+      this.props.startScanning();
+    }
   }
 
   render(){
