@@ -4,6 +4,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import WatchSetsList from '../components/watchsets/WatchSetsList';
+import WatchSetPreview from '../components/watchsets/WatchSetPreview';
 import { getAllWatchSets } from '../reducers/watchsets';
 import {
   selectWatchset,
@@ -13,6 +14,14 @@ import {
 
 class WatchSetsContainer extends React.Component {
 
+  constructor(props){
+    super(props);
+
+    this.state = ({
+      preview: undefined,
+    }:any);
+  }
+
   createOptionsMenu(watchsets){
     var optionsMenu = [{
       title: "Import",
@@ -20,8 +29,9 @@ class WatchSetsContainer extends React.Component {
         this.props.onImportWatchSet();
       }
     }];
-    var selectedCount = watchsets.filter((item)=>item.isSelected).length;
-    if(selectedCount > 0){
+    var selectedWatchSets = watchsets.filter((item)=>item.isSelected);
+
+    if(selectedWatchSets.length > 0){
       optionsMenu.push({
         title: "Delete",
         action: ()=>{
@@ -30,10 +40,13 @@ class WatchSetsContainer extends React.Component {
       });
     }
 
-    if(selectedCount == 1){
+    if(selectedWatchSets.length == 1){
+      var selectedWatchSet = selectedWatchSets[0];
       optionsMenu.push({
         title: "Preview",
-        action: () => {}
+        action: () => {
+          this.setState({preview: selectedWatchSet});
+        }
       });
       optionsMenu.push({
         title:"Upload",
@@ -59,11 +72,16 @@ class WatchSetsContainer extends React.Component {
   }
 
   render() {
-    return (
-      <WatchSetsList
-        watchsets={this.props.watchsets}
-        onWatchSetSelected={(watchset) => this.props.onWatchSetSelected(watchset)} />
-    );
+    if(this.state.preview){
+      return <WatchSetPreview size={500} watchSet={this.state.preview}/>
+    }
+    else {
+      return (
+        <WatchSetsList
+          watchsets={this.props.watchsets}
+          onWatchSetSelected={(watchset) => this.props.onWatchSetSelected(watchset)} />
+      );
+    }
   }
 }
 

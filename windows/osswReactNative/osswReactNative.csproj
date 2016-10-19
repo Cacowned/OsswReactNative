@@ -219,6 +219,10 @@
       <Project>{93a98120-470f-471c-a58f-29cb18576e80}</Project>
       <Name>FSManager</Name>
     </ProjectReference>
+    <ProjectReference Include="..\OsswNative\OsswNative.csproj">
+      <Project>{b509705b-1f4e-4526-b0a7-a34393192591}</Project>
+      <Name>OsswNative</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ReduxDevTools\ReduxDevTools.csproj">
       <Project>{0d0db09e-de14-41e8-ab75-333224e82fce}</Project>
       <Name>ReduxDevTools</Name>

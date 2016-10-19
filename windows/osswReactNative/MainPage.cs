@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using BleManager;
 using FilePickerManager;
 using FSManager;
-using ReduxDevTools;
+using OsswNative;
 
 namespace osswReactNative
 {
@@ -28,7 +28,7 @@ namespace osswReactNative
             new BleManagerPackage(),
             new FilePickerPackage(),
             new FileSystemPackage(),
-            new DevToolsPackage(),
+            new OsswNativePackage(),
         };
 
         public override bool UseDeveloperSupport => true;
