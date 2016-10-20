@@ -11,8 +11,12 @@ import {
 } from 'react-native';
 import WatchControl from './preview/WatchControl';
 const base64 = require('base64-js');
-import NumberControlRenderer from './preview/NumberControlRenderer';
-import ImageControlRenderer from './preview/ImageControlRenderer';
+import {
+  NumberControlRenderer,
+  ImageControlRenderer,
+  ProgressControlRenderer,
+} from './preview';
+
 
 function drawWatchSet(control, watchset, screenNr:number){
   if(watchset){
@@ -26,9 +30,12 @@ function drawWatchSet(control, watchset, screenNr:number){
           var ncr = new NumberControlRenderer(item, resources);
           ncr.render(control, 9);
         break;
-        case "image":{
+        case "image":
           new ImageControlRenderer(item, resources).render(control);
-        }
+        break;
+        case "progress":
+          new ProgressControlRenderer(item).render(control, 50);
+        break;
       }
     });
   }
@@ -86,6 +93,8 @@ class WatchSetPreview extends React.Component {
         <WatchControl
           style={styles.watchcontrol}
           clearColor='black'
+          foregroundColor='white'
+          backgroundColor='black'
           ref={(ref)=>this.control = ref}
           />
 

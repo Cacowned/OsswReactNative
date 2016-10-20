@@ -2,7 +2,12 @@
 
 'use strict';
 import React, { PropTypes } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  BackAndroid
+} from 'react-native';
 
 import Header from './Header';
 var Menu = require('./Menu');
