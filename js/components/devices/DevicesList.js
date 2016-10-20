@@ -6,6 +6,9 @@ import {View, ListView, StyleSheet} from 'react-native';
 import DeviceItem from './DeviceItem';
 
 class DevicesList extends React.Component{
+  state:{
+    dataSource: ListView.DataSource;
+  }
   constructor(props : Object){
     super(props);
     var ds = new ListView.DataSource({rowHasChanged: (r1,r2) => r1 !== r2});

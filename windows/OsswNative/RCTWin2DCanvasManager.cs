@@ -100,6 +100,7 @@ namespace OsswNative
 
         public override void OnDropViewInstance(ThemedReactContext reactContext, CanvasControl view)
         {
+            drawingQueue.Clear();
             view.Draw -= CanvasControlOnDraw;
         }
     }

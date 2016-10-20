@@ -13,7 +13,9 @@ import {
 } from '../actions';
 
 class WatchSetsContainer extends React.Component {
-
+  state:{
+    preview: Object;
+  }
   constructor(props){
     super(props);
 
@@ -73,7 +75,7 @@ class WatchSetsContainer extends React.Component {
 
   render() {
     if(this.state.preview){
-      return <WatchSetPreview size={500} watchSet={this.state.preview}/>
+      return <WatchSetPreview watchSet={this.state.preview}/>
     }
     else {
       return (

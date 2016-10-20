@@ -6,6 +6,9 @@ import { View, StyleSheet} from 'react-native';
 import OptionsMenuItem from './OptionsMenuItem';
 
 class OptionsMenu extends React.Component {
+  state:{
+    options: Object[];
+  }
   constructor(props: Object) {
     super(props);
     this.state = {

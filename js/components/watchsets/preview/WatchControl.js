@@ -8,21 +8,75 @@ import ReactNative, {
 
 import Win2DCanvas from './Win2DCanvas';
 
+import {
+  NumberControlRenderer,
+  ImageControlRenderer,
+  ProgressControlRenderer,
+} from './';
+
 class WatchControl extends React.Component{
   canvas:Win2DCanvas;
   foregroundColor:any;
   backgroundColor:any;
-  render(){
-    if(this.props.inverted){
-      this.foregroundColor = this.props.backgroundColor;
-      this.backgroundColor = this.props.foregroundColor;
+
+  constructor(props:Object){
+    super(props);
+    this._setColors(props);
+  }
+
+  _setColors(props){
+    if(props.inverted){
+      this.foregroundColor = props.backgroundColor;
+      this.backgroundColor = props.foregroundColor;
     }else{
-      this.foregroundColor = this.props.foregroundColor;
-      this.backgroundColor = this.props.backgroundColor;
+      this.foregroundColor = props.foregroundColor;
+      this.backgroundColor = props.backgroundColor;
     }
+  }
+
+  componentDidMount(){
+    this.drawWatchSet(this.props.watchSet, this.props.showScreen);
+  }
+
+  componentWillUpdate(nextProps:Object){
+    this._setColors(nextProps);
+    this.drawWatchSet(nextProps.watchSet, nextProps.showScreen)
+  }
+
+  drawWatchSet(watchset:Object, screenNr:number){
+    if(watchset){
+      const { screens, resources } = watchset.data;
+      if(screenNr < 0 || screenNr >= screens.length){
+        return;
+      }
+      screens[screenNr].controls.forEach((item)=>{
+        switch(item.type){
+          case "number":
+            var ncr = new NumberControlRenderer(item, resources);
+            ncr.render(this, 9);
+          break;
+          case "image":
+            new ImageControlRenderer(item, resources).render(this);
+          break;
+          case "progress":
+            new ProgressControlRenderer(item).render(this, 50);
+          break;
+        }
+      });
+    }
+    else {
+      this.drawRectangle(0,0,144,168, false)
+      this.canvas.drawLine(0,0, 144, 168, this.foregroundColor);
+      this.canvas.drawLine(0,168, 144, 0, this.foregroundColor);
+    }
+    this.invalidate();
+  }
+
+  render(){
     return(
       <Win2DCanvas
         {...this.props}
+        clearColor={this.props.clearColor}
         ref={(ref) => this.canvas=ref} />
     );
   }
@@ -93,14 +147,16 @@ WatchControl.propTypes = {
   backgroundColor: PropTypes.any,
   foregroundColor: PropTypes.any,
   inverted: PropTypes.bool,
+  showScreen: PropTypes.number,
   ...View.propTypes
 };
 
-WatchControl.defaultProps = {
+WatchControl.defaultProps = ({
   clearColor:'black',
   backgroundColor: 'black',
   foregroundColor: 'white',
   inverted: false,
-};
+  showScreen: 0,
+}:any);
 
 module.exports = WatchControl;

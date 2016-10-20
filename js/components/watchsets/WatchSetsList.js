@@ -8,6 +8,9 @@ import WatchSetItem from './WatchSetItem';
 
 
 class WatchSetsList extends React.Component {
+  state:{
+    dataSource: ListView.DataSource;
+  }
   constructor(props: Object){
     super(props);
 
