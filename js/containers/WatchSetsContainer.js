@@ -3,6 +3,7 @@
 'use strict';
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { BackAndroid } from 'react-native';
 import WatchSetsList from '../components/watchsets/WatchSetsList';
 import WatchSetPreview from '../components/watchsets/WatchSetPreview';
 import { getAllWatchSets } from '../reducers/watchsets';
@@ -47,7 +48,10 @@ class WatchSetsContainer extends React.Component {
       optionsMenu.push({
         title: "Preview",
         action: () => {
-          this.setState({preview: selectedWatchSet});
+          this.context.setOptions([]);
+          this.setState({
+            preview: selectedWatchSet,
+          });
         }
       });
       optionsMenu.push({
@@ -57,6 +61,11 @@ class WatchSetsContainer extends React.Component {
     }
 
     this.context.setOptions(optionsMenu);
+  }
+
+  componentWillMount(){
+    BackAndroid.addEventListener('hardwareBackPress',
+      this._handleBackButtonPress.bind(this));
   }
 
   componentDidMount(){
@@ -84,6 +93,15 @@ class WatchSetsContainer extends React.Component {
           onWatchSetSelected={(watchset) => this.props.onWatchSetSelected(watchset)} />
       );
     }
+  }
+
+  _handleBackButtonPress(){
+    if(this.state.preview){
+      this.createOptionsMenu(this.props.watchsets);
+      this.setState({preview: undefined});
+      return true;
+    }
+    return false;
   }
 }
 

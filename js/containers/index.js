@@ -14,6 +14,5 @@ var Containers = {
   Root,
 };
 
-console.log('indexContainers:',Containers.OptionsMenuContext);
 
 module.exports = Containers;

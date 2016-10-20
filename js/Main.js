@@ -6,7 +6,6 @@ import {
   StyleSheet,
   Text,
   View,
-  BackAndroid
 } from 'react-native';
 
 import Header from './Header';
@@ -15,6 +14,10 @@ var Footer = require('./Footer');
 
 import DevicesContainer from './containers/DevicesContainer';
 import WatchSetsContainer from './containers/WatchSetsContainer';
+import UtilitiesContainer from './containers/UtilitiesContainer';
+import ExtensionsContainer from './containers/ExtensionsContainer';
+import ApplicationsContainer from './containers/ApplicationsContainer';
+import SettingsContainer from './containers/SettingsContainer';
 import OptionsMenuContext from './containers/OptionsMenuContext';
 
 import type { OptionItem } from './options/types';
@@ -79,15 +82,15 @@ class Main extends React.Component {
         case 'watchfaces':
           return (<WatchSetsContainer />);
         case 'apps':
-          return (<Text>Applications</Text>);
+          return (<ApplicationsContainer/>);
         case 'utils':
-          return (<Text>Utilities</Text>);
+          return (<UtilitiesContainer/>);
         case 'exts':
-          return (<Text>Extensions</Text>);
+          return (<ExtensionsContainer/>);
         case 'watches':
           return <DevicesContainer/>;
         case 'settings':
-          return (<Text>Settings</Text>);
+          return (<SettingsContainer/>);
       }
       return (
         <Text>Unknown</Text>
