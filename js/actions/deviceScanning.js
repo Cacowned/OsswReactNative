@@ -39,7 +39,7 @@ function connectDevice(device: Device) {
       //   .then((data)=>{
       //     console.log(data);
       //   });
-debugger;
+
       // setdatetime on connect
       BleManager.write(device.address, osswUartUuid, osswTXUartUuid, getDateTimeAsBase64())
       .then((a,b)=>{
@@ -63,11 +63,14 @@ export const selectDevice = (device: Device): ThunkAction =>{
 
 export const rehydrateDevice = (device: Device): ThunkAction => {
   return(dispatch, getState) => {
-    connectDevice(device);
     dispatch(({
       type: REHYDRATE_DEVICE,
       device: device,
     }:any));
+
+    if(getState().settings.autoSynchronizeTime){
+      connectDevice(device);
+    }
   };
 };
 

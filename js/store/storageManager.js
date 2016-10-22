@@ -8,22 +8,25 @@ import { AsyncStorage } from 'react-native';
 const storageKeyPrefix = 'OSSW:';
 const storageDeviceKey = storageKeyPrefix + 'device';
 const storageWatchSetKey = storageKeyPrefix + 'watchset';
+const storageSettingsKey = storageKeyPrefix + 'settings';
 
 import type { Device } from '../reducers/deviceScanning';
 import type { WatchSet } from '../reducers/watchsets';
+import type { Settings } from '../reducers/settings';
 
 export function setDevice(device : Device){
-  debugger;
   return AsyncStorage.setItem(storageDeviceKey, JSON.stringify(device));
 }
 
 export function getDevice(){
   return new Promise((resolve, reject) => {
     AsyncStorage.getItem(storageDeviceKey)
-      .then(result => resolve({
-        device: JSON.parse(result)
-      }))
-      .catch(ex=>reject(ex));
+      .then(result =>
+        resolve({
+          device: JSON.parse(result)
+          }
+        )
+      ).catch(ex=>reject(ex));
   });
 }
 
@@ -63,4 +66,20 @@ export function getWatchSets(){
       })
       .catch(ex=>reject(ex));
   });
+}
+
+export function getSettings(){
+  return new Promise((resolve, reject) =>{
+    AsyncStorage.getItem(storageSettingsKey)
+    .then(result =>
+      resolve({
+        settings: JSON.parse(result)
+        }
+      )
+    ).catch(ex=>reject(ex));
+  });
+}
+
+export function saveSettings(settings: Settings){
+  return AsyncStorage.setItem(storageSettingsKey, JSON.stringify(settings));
 }

@@ -7,8 +7,17 @@ import thunk from 'redux-thunk';
 import reducers from '../reducers';
 var { AsyncStorage } = require('react-native');
 
-import { getDevice, getWatchSets } from '../store/storageManager';
-import { rehydrateDevice, rehydrateWatchSets } from '../actions';
+import {
+  getDevice,
+  getWatchSets,
+  getSettings,
+} from '../store/storageManager';
+
+import {
+  rehydrateDevice,
+  rehydrateWatchSets,
+  rehydrateSettings,
+} from '../actions';
 
 import BleManager from '../Ble/BleManager';
 
@@ -21,6 +30,20 @@ export function clearStorage(){
 function configureStore(onComplete: ?()=>void) {
   let store = createStore(reducers, applyMiddleware(thunk));
 
+  var settings = getSettings().then((data)=>{
+    if(data && data.settings){
+      console.log('restoring from storage:', data.settings);
+      store.dispatch(rehydrateSettings(data.settings));
+    }
+  });
+
+  var watchsets = getWatchSets().then((data)=>{
+    if(data && data.length > 0){
+      console.log('restoring from storage:', data);
+      store.dispatch(rehydrateWatchSets(data));
+    }
+  });
+
   var devices = getDevice()
     .then((data)=>{
       if(data && data.device){
@@ -30,14 +53,7 @@ function configureStore(onComplete: ?()=>void) {
       }
     });
 
-  var watchsets = getWatchSets().then((data)=>{
-    if(data && data.length > 0){
-      console.log('restoring from storage:', data);
-      store.dispatch(rehydrateWatchSets(data));
-    }
-  });
-
-  Promise.all([devices, watchsets])
+  Promise.all([settings, watchsets, devices])
     .then(value => {
       if(onComplete){
         onComplete();
