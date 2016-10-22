@@ -32,7 +32,7 @@ function getDateTimeAsBase64(){
   return base64.fromByteArray(date);
 }
 
-function connectDevice(device: Device) {
+function connectDevice(device: Device, syncTime:boolean=true) {
   BleManager.connect(device.address)
     .then(()=>{
       // BleManager.read(device.address, batteryServiceUuid, batteryCharUuid)
@@ -41,18 +41,20 @@ function connectDevice(device: Device) {
       //   });
 
       // setdatetime on connect
-      BleManager.write(device.address, osswUartUuid, osswTXUartUuid, getDateTimeAsBase64())
-      .then((a,b)=>{
-        console.log('done');
-      });
+      if(syncTime){
+        BleManager.write(device.address, osswUartUuid, osswTXUartUuid, getDateTimeAsBase64())
+          .then((a,b)=>{
+            console.log('synced time');
+          });
+      }
     });
 }
 
 export const selectDevice = (device: Device): ThunkAction =>{
-  return (dispatch) => {
+  return (dispatch, getState) => {
 
     setDevice(device);
-    connectDevice(device);
+    connectDevice(device, getState().settings.autoSynchronizeTime);
 
     dispatch(({
       type: SELECT_DEVICE,
@@ -68,9 +70,7 @@ export const rehydrateDevice = (device: Device): ThunkAction => {
       device: device,
     }:any));
 
-    if(getState().settings.autoSynchronizeTime){
-      connectDevice(device);
-    }
+    connectDevice(device, getState().settings.autoSynchronizeTime);
   };
 };
 
