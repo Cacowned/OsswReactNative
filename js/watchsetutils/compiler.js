@@ -10,18 +10,22 @@ export function compileWatchSet(watchSet : Object){
   var data = watchSet.data;
   var resources = data.resources;
   var screens = data.screens;
+  var dataLength = 15;
 
   var resourcesData = new Uint8ClampedArray(0);
-  if(resources != null){
-    resourcesData = compileResources(resources);
-  }
   var parsedresources = parseResources(resources);
+  if(resources != null){
+    resourcesData = compileResources(parsedresources);
+    dataLength += 3 + resourcesData.length;
+  }
 
   var extensionPropertiesData = new Uint8ClampedArray(1);
+  dataLength += extensionPropertiesData.length;
 
-  var screensData = compileScreensSection(screens)
+  var screensData = compileScreensSection(screens, parsedresources);
+  dataLength += screensData.length;
 
-  var data = new Uint8ClampedArray(5);
+  var data = new Uint8ClampedArray(dataLength);
   // magic number
   data[0] = 0x05;
   data[1] = 0x53;
