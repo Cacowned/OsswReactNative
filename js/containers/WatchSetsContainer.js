@@ -12,6 +12,7 @@ import {
   importWatchSet,
   deleteSelectedWatchSet,
 } from '../actions';
+import {compileWatchSet} from '../watchsetutils/compiler';
 
 class WatchSetsContainer extends React.Component {
   state:{
@@ -56,7 +57,9 @@ class WatchSetsContainer extends React.Component {
       });
       optionsMenu.push({
         title:"Upload",
-        action: () => {}
+        action: () => {
+          compileWatchSet(selectedWatchSet);
+        }
       });
     }
 

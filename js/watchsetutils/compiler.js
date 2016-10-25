@@ -2,11 +2,10 @@
 'use strict';
 
 import WatchConstants from './constants';
-import getImageData from './ImageDataHelper';
 var base64 = require('base64-js');
 
 export function compileWatchSet(watchSet : Object){
-
+debugger;
   var data = watchSet.data;
   var resources = data.resources;
   var screens = data.screens;
@@ -15,7 +14,7 @@ export function compileWatchSet(watchSet : Object){
   var resourcesData = new Uint8ClampedArray(0);
   var parsedresources = parseResources(resources);
   if(resources != null){
-    resourcesData = compileResources(parsedresources);
+    resourcesData = compileResources(resources);
     dataLength += 3 + resourcesData.length;
   }
 
@@ -34,10 +33,10 @@ export function compileWatchSet(watchSet : Object){
   data[3] = 0x1;
   // write watch set id
   var id = generateWatchSetId(watchSet);
-  data[4] = id >> 24;
-  data[5] = id >> 16;
-  data[6] = id >> 8;
-  data[7] = id;
+  data[4] = (id >> 24)&0xff;
+  data[5] = (id >> 16)&0xff;
+  data[6] = (id >> 8)&0xff;
+  data[7] = id&0xff;
   data[8] = WatchConstants.WATCH_SET_SECTION_SCREENS;
 
   data[9] = screensData.length >> 8;
@@ -50,14 +49,14 @@ export function compileWatchSet(watchSet : Object){
   data[length+1] = extensionPropertiesData.length >> 8;
   data[length+2] = extensionPropertiesData.length;
   data.set(extensionPropertiesData, length+3);
-  length += 4 + extensionPropertiesData.length;
+  length += 3 + extensionPropertiesData.length;
 
   if(resources != null){
     data[length] = WatchConstants.WATCH_SET_SECTION_RESOURCES;
     data[length+1] = resourcesData.length >> 8;
     data[length+2] = resourcesData.length;
     data.set(resourcesData, length+3);
-    length += 4 + resourcesData.length;
+    length += 3 + resourcesData.length;
   }
   data[length] = WatchConstants.WATCH_SET_END_OF_DATA;
 }
@@ -77,8 +76,38 @@ function parseResources(resources: Object[]){
   return [];
 }
 
+function compileExternalProperties(){
+
+}
+
 function compileResources(resources: Object[]){
-  return new Uint8ClampedArray();
+debugger;
+  var resourceDataOffset = 1 + (resources.length*3);
+  var resourcesData = [];
+  for(var i = 0; i < resources.length; i++){
+    resourcesData.push(base64.toByteArray(resources[i].data));
+  }
+
+  var dataLength = resourcesData.reduce((prev,cur)=>prev+cur.length,0);
+  dataLength += resourceDataOffset;
+
+  var result = new Uint8ClampedArray(dataLength);
+  result[0]=resources.length;
+  var offset = 1;
+  for(var i = 0; i < resourcesData.length; i++){
+    result[offset]=(resourceDataOffset>>16)&0xff;
+    result[offset+1]=(resourceDataOffset>>8)&0xff;
+    result[offset+2]=resourceDataOffset&0xff;
+    offset += 3;
+    resourceDataOffset += resourcesData[i].length;
+  }
+
+  for(var i = 0; i < resourcesData.length; i++){
+    result.set(resourcesData[i], offset);
+    offset += resourcesData[i].length;
+  }
+
+  return result;
 }
 
 function compileScreensSection(screens: Object[]){
